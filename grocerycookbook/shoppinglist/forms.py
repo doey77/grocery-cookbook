@@ -13,7 +13,7 @@ class CreateShoppingList(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.layout = Layout(
             'list_name',
-            Submit('submit', 'Create List', css_class='btn btn-success')
+            Submit('submit', 'Create List', css_class='btn btn-success', css_id='btn-create-list')
         )
     
     class Meta:
@@ -33,7 +33,7 @@ class AddToShoppingList(forms.ModelForm):
             'shopping_list',
             'item',
             'quantity',
-            Submit('submit', 'Add Item', css_class='btn btn-primary')
+            Submit('submit', 'Add Item', css_class='btn btn-primary', css_id='btn-add-item')
         )
         self.helper.form_id = "addToShoppingListForm"
     

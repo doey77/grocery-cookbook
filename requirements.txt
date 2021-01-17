@@ -3,3 +3,6 @@ django==3.1
 
 # Used for interacting with PostgreSQL database
 psycopg2-binary==2.8.6
+
+# Used for easier forms
+django-crispy-forms==1.10.0

@@ -4,6 +4,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'shoppinglist/index.css' %}">
+    <script src="{% static 'shoppinglist/index.js' %}"></script>
 {% endblock head %}
 
 {% block content %}
@@ -20,24 +21,24 @@
     <br>
     <h3>List Contents</h3>
 
-    {{user_list_contents}}
-
-    <div class="table-responsive">
-    <table class="table table-bordered table-striped">
+    <table id="tblShoppingList" class="table table-bordered table-striped" style="width:100%">
         <thead>
             <tr>
                 <th>Item</th>
                 <th>Quantity</th>
+                <th>List</th>
             </tr>
         </thead>
         <tbody>
             {% for list_entry in user_list_contents %}
             <tr>
-                <td>{{user_list_contents}}</td>
+                <td>{{list_entry.item}}</td>
+                <td>{{list_entry.quantity}}</td>
+                <td>{{list_entry.shopping_list}}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
-    </div>
+    <br><br><br>
 </div>
 {% endblock content %}
