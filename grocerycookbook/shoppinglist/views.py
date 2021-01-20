@@ -1,5 +1,8 @@
 from django.contrib import messages
 from django.shortcuts import render
+from django.http import HttpResponseBadRequest, HttpResponse
+
+import json
 
 from .forms import *
 
@@ -47,3 +50,29 @@ def index(request):
     }
 
     return render(request, 'shoppinglist/index.html', context)
+
+def ajax_add_item_to_list(request):
+    """
+    AJAX call for creating an item to add to the list
+    AJAX passes in: shopping_list, item, quantity
+    """
+    if request.method == 'POST':
+        # Get the form data
+        shopping_list = ShoppingList.objects.get(list_name=request.POST.get('shopping_list'))
+        item = request.POST.get('item')
+        quantity = int(request.POST.get('quantity'))
+
+        response = {}
+
+        list_item = ShoppingListContents(shopping_list=shopping_list, item=item, quantity=quantity)
+        list_item.save()
+
+        response['result'] = "List item created successfully"
+        response['id'] = str(list_item.id)
+        response['shopping_list'] = str(list_item.shopping_list)
+        response['item'] = str(list_item.item)
+        response['quantity'] = str(list_item.quantity)
+
+        return HttpResponse(json.dumps(response), content_type='application/json')
+    else:
+        return HttpResponseBadRequest("ERROR: Must be a POST request")

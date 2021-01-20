@@ -5,6 +5,8 @@
 {% block head %}
     <link rel="stylesheet" href="{% static 'shoppinglist/index.css' %}">
     <script src="{% static 'shoppinglist/index.js' %}"></script>
+    {% url 'shoppinglist:ajax_add_item_to_list' as add_item_to_list_url %}
+    {{ add_item_to_list_url|json_script:"add_item_to_list_url" }}    
 {% endblock head %}
 
 {% block content %}
