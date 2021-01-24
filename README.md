@@ -1,2 +1,2 @@
 # Grocery Cookbook
-This is a Django 3.1 project.
+This is a Fast API / React project
