@@ -6,3 +6,11 @@
     left: 0;
     right: 0;
 }
+
+noscript {
+    position: fixed;
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+}
