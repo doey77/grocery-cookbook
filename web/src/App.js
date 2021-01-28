@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
 
-class MyComponent extends React.Component {
+class DadJokeAPIGet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -46,7 +46,7 @@ class MyComponent extends React.Component {
 
 function App() {
   return (
-    <MyComponent></MyComponent>
+    <DadJokeAPIGet></DadJokeAPIGet>
   );
 }
 
