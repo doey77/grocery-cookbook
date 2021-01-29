@@ -17,8 +17,10 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import App from './App';
+import MasterContainer from './MasterContainer';
 import { Button } from '@material-ui/core';
+
+// Navigation components set up here. Content goes in MasterContainer
 
 const drawerWidth = 240;
 
@@ -154,7 +156,7 @@ export default function MiniDrawer() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <App></App>
+        <MasterContainer></MasterContainer>
       </main>
     </div>
   );

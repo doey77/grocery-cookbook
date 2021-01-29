@@ -25,7 +25,6 @@ class DadJokeAPIGet extends React.Component {
     }
     axios.get('https://icanhazdadjoke.com/',config)
       .then(result => {
-        console.log(result);
         this.setState({
           isLoaded: true,
           items: result.data.joke
@@ -55,9 +54,7 @@ class DadJokeAPIGet extends React.Component {
 
 function App() {
   return (
-    <div>
     <DadJokeAPIGet></DadJokeAPIGet>
-    </div>
   );
 }
 
