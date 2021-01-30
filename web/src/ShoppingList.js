@@ -33,6 +33,9 @@ class ShoppingListForm extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+        this.deleteEntry = this.deleteEntry.bind(this);
+        this.incrementQty = this.incrementQty.bind(this);
+        this.decrementQty = this.decrementQty.bind(this);
     }
 
     handleChange(event) {
@@ -91,6 +94,44 @@ class ShoppingListForm extends React.Component {
         }
     }
 
+    deleteEntry(list_entry) {
+        let current_items_list = this.state.list_contents; // get our current list
+        let index = current_items_list.indexOf(list_entry); // get index of value to remove
+        if (index !== -1) { // In case index came up as not present
+            current_items_list.splice(index, 1); // remove from the list
+        }
+
+        this.setState({
+            list_contents: current_items_list
+        });
+    }
+
+    incrementQty(list_entry) {
+        let current_items_list = this.state.list_contents; // get our current list
+        let index = current_items_list.indexOf(list_entry); // get index of value to adjust
+        if (index !== -1) {
+            current_items_list[index].quantity += 1 // increase item qty by 1
+        }
+
+        this.setState({
+            list_contents: current_items_list
+        })
+    }
+
+    decrementQty(list_entry) {
+        let current_items_list = this.state.list_contents; // get our current list
+        let index = current_items_list.indexOf(list_entry); // get index of value to adjust
+        if (index !== -1) {
+            if (current_items_list[index].quantity > 1) {
+                current_items_list[index].quantity -= 1 // decrease item qty by 1
+            }
+        }
+
+        this.setState({
+            list_contents: current_items_list
+        })
+    }
+
     render() {
         return (
             <div id="shopping-list-container">
@@ -123,13 +164,13 @@ class ShoppingListForm extends React.Component {
                     <TableBody>
                         {this.state.list_contents.map((list_entry) => (
                         <TableRow key={list_entry['item']}>
-                            <TableCell>{list_entry['item']}</TableCell>
-                            <TableCell>{list_entry['quantity']}&nbsp;</TableCell>
+                            <TableCell id={"id_item_" + list_entry['item']}>{list_entry['item']}</TableCell>
+                            <TableCell>{list_entry['quantity']}</TableCell>
                             <TableCell>
-                                <IconButton><UpIcon></UpIcon></IconButton>
-                                <IconButton><DownIcon></DownIcon></IconButton>
+                                <IconButton onClick={()=>this.incrementQty(list_entry)}><UpIcon></UpIcon></IconButton>
+                                <IconButton onClick={()=>this.decrementQty(list_entry)}><DownIcon></DownIcon></IconButton>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <IconButton><DeleteIcon></DeleteIcon></IconButton>
+                                <IconButton onClick={()=>this.deleteEntry(list_entry)}><DeleteIcon></DeleteIcon></IconButton>
                             </TableCell>
                         </TableRow>
                         ))}
