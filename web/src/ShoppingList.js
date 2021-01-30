@@ -1,6 +1,9 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
+import DeleteIcon from '@material-ui/icons/Delete';
+import UpIcon from '@material-ui/icons/ArrowUpward';
+import DownIcon from '@material-ui/icons/ArrowDownward';
 import Paper from '@material-ui/core/Paper';
 
 // Table stuff
@@ -112,15 +115,22 @@ class ShoppingListForm extends React.Component {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Item</TableCell>
-                            <TableCell>Quantity</TableCell>
+                            <TableCell style={{minWidth:150}}>Item</TableCell>
+                            <TableCell style={{maxWidth:50}}>Quantity</TableCell>
+                            <TableCell></TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {this.state.list_contents.map((list_entry) => (
                         <TableRow key={list_entry['item']}>
                             <TableCell>{list_entry['item']}</TableCell>
-                            <TableCell>{list_entry['quantity']}</TableCell>
+                            <TableCell>{list_entry['quantity']}&nbsp;</TableCell>
+                            <TableCell>
+                                <IconButton><UpIcon></UpIcon></IconButton>
+                                <IconButton><DownIcon></DownIcon></IconButton>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <IconButton><DeleteIcon></DeleteIcon></IconButton>
+                            </TableCell>
                         </TableRow>
                         ))}
                     </TableBody>
