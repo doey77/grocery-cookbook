@@ -45,17 +45,20 @@ class ShoppingListForm extends React.Component {
         this.setState({
             item: '',
             quantity: '1',
-        })
+        });        
     }
 
     render() {
         return (
             <div id="shopping-list-container">
             <form onSubmit={this.handleSubmit}>
-                <TextField variant="standard" name="item" label="Item" onChange={this.handleChange}/>
+                <TextField variant="standard" name="item" id="input_item" label="Item" 
+                    onChange={this.handleChange} value={this.state.item}
+                />
                 <TextField
-                    variant="standard" name="quantity" defaultValue="1" label="Quantity" type="number"
+                    variant="standard" name="quantity" label="Quantity" type="number"
                     style={{width:50}} inputProps={{min:"1"}} onChange={this.handleChange}
+                    value={this.state.quantity}
                 />
                 <IconButton type="submit" aria-label="Add Item">
                     <AddIcon />
