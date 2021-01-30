@@ -14,11 +14,15 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListAltIcon from '@material-ui/icons/ListAlt';
-import MasterContainer from './MasterContainer';
+
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import HomeIcon from '@material-ui/icons/Home';
+
 import { Button } from '@material-ui/core';
+
+import Homepage from './Homepage';
 
 // Navigation components set up here. Content goes in MasterContainer
 
@@ -148,7 +152,11 @@ export default function MiniDrawer() {
         </div>
         <Divider />
         <List>
-          <ListItem button key="List">
+          <ListItem button key="home">
+            <ListItemIcon><HomeIcon></HomeIcon></ListItemIcon>
+            <ListItemText>Home</ListItemText>
+          </ListItem>
+          <ListItem button key="shopping_list">
             <ListItemIcon><ListAltIcon></ListAltIcon></ListItemIcon>
             <ListItemText>Shopping List</ListItemText>
           </ListItem>
@@ -156,7 +164,7 @@ export default function MiniDrawer() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <MasterContainer></MasterContainer>
+        <Homepage></Homepage>
       </main>
     </div>
   );
