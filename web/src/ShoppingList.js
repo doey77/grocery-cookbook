@@ -1,7 +1,16 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
+import Paper from '@material-ui/core/Paper';
+
+// Table stuff
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+
 import { IconButton } from '@material-ui/core';
 
 class ShoppingListForm extends React.Component {
@@ -9,8 +18,14 @@ class ShoppingListForm extends React.Component {
         super(props);
         this.state = {
             item: '',
-            quantity: '1',
+            quantity: 1,
             list_contents: [],
+
+            item_error_text: '',
+            item_error: false,
+
+            qty_error_text: '',
+            qty_error: false,
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -23,7 +38,11 @@ class ShoppingListForm extends React.Component {
         const name = target.name;
 
         this.setState({
-            [name]: value
+            [name]: value,
+            item_error_text: '',
+            item_error: false,
+            qty_error_text: '',
+            qty_error: false,
         })
     }
 
@@ -31,41 +50,82 @@ class ShoppingListForm extends React.Component {
         event.preventDefault();
         const entry = {
             item: this.state.item,
-            quantity: this.state.quantity,
+            quantity: parseInt(this.state.quantity, 10),
         };
-        this.state.list_contents.push(entry);
 
+        const current_list = this.state.list_contents;
 
-        const list_jsx = this.state.list_contents.map((list_entry) =>
-            <p key={list_entry['item']}>{list_entry['item']} {list_entry['quantity']}</p>
-        );
- 
-        ReactDOM.render(list_jsx, document.getElementById('shopping-list-contents'));
+        let list_items_only = [];
+        for (let i = 0; i < current_list.length; i++) {
+            const current_list_entry = current_list[i];
+            list_items_only.push(current_list_entry['item'])
+        }
 
-        this.setState({
-            item: '',
-            quantity: '1',
-        });        
+        if (entry.item !== '' && entry.quantity > 0 && !list_items_only.includes(entry.item)) {
+            
+            this.state.list_contents.push(entry);
+            this.setState({
+                item: '',
+                quantity: 1,
+                item_error: false,
+                item_error_text: '',
+                qty_error: false,
+                qty_error_text: '',
+            });
+        }
+        
+        if (entry.quantity > 0 && list_items_only.includes(entry.item)) {
+            this.setState({
+                item_error: true,
+                item_error_text: 'That item already exists'
+            })
+        }
+        if (entry.quantity <= 0) {
+            this.setState({
+                qty_error: true,
+                qty_error_text: "Quantity must be > 0"
+            })
+        }
     }
 
     render() {
         return (
             <div id="shopping-list-container">
+            <h3>Shopping List</h3>
             <form onSubmit={this.handleSubmit}>
                 <TextField variant="standard" name="item" id="input_item" label="Item" 
                     onChange={this.handleChange} value={this.state.item}
+                    helperText={this.state.item_error_text} error={this.state.item_error}
                 />
                 <TextField
                     variant="standard" name="quantity" label="Quantity" type="number"
-                    style={{width:50}} inputProps={{min:"1"}} onChange={this.handleChange}
+                    style={{width:75}} onChange={this.handleChange}
                     value={this.state.quantity}
+                    helperText={this.state.qty_error_text} error={this.state.qty_error}
                 />
                 <IconButton type="submit" aria-label="Add Item">
                     <AddIcon />
                 </IconButton>
             </form>
             <br />
-            <div id="shopping-list-contents"></div>
+            <TableContainer component={Paper} style={{width:'fit-content', minWidth:300}}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Item</TableCell>
+                            <TableCell>Quantity</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {this.state.list_contents.map((list_entry) => (
+                        <TableRow key={list_entry['item']}>
+                            <TableCell>{list_entry['item']}</TableCell>
+                            <TableCell>{list_entry['quantity']}</TableCell>
+                        </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
             </div>
         );
     }
@@ -73,9 +133,7 @@ class ShoppingListForm extends React.Component {
 
 function ShoppingList() {
     return (
-        <div id="shopping-list-master-container">
         <ShoppingListForm></ShoppingListForm>
-        </div>
     );
 }
 
