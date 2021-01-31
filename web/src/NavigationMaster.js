@@ -16,6 +16,7 @@ import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListAltIcon from '@material-ui/icons/ListAlt';
+import Grid from '@material-ui/core/Grid';
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import HomeIcon from '@material-ui/icons/Home';
@@ -26,7 +27,7 @@ import { Button } from '@material-ui/core';
 import ShoppingList from './ShoppingList';
 import HomePage from './Homepage';
 
-
+// Handles the main content area
 class MasterContainer extends React.Component {
   constructor(props) {
       super(props);
@@ -116,8 +117,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const icon_style = { marginTop: -7 }
-
+// Our navbar setup, as well as links to pages, is here
 function MiniDrawer(props) {
   const classes = useStyles();
   const theme = useTheme();
@@ -152,9 +152,16 @@ function MiniDrawer(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap>
-            <img src={Icon} alt="Icon" style={icon_style}></img> Grocery Cookbook
-          </Typography>
+
+          <Grid container direction="row" alignItems="center" wrap="nowrap">
+            <Grid item>
+              <img src={Icon} alt="Icon"></img>
+            </Grid>
+            <Grid item>
+              <Typography variant="h6" noWrap>&nbsp;Grocery Cookbook</Typography>
+            </Grid>
+          </Grid>
+
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
