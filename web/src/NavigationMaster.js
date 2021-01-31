@@ -22,9 +22,35 @@ import HomeIcon from '@material-ui/icons/Home';
 
 import { Button } from '@material-ui/core';
 
-import Homepage from './Homepage';
+// Import different pages here
+import ShoppingList from './ShoppingList';
+import HomePage from './Homepage';
 
-// Navigation components set up here. Content goes in MasterContainer
+
+class MasterContainer extends React.Component {
+  constructor(props) {
+      super(props);
+      this.state = {
+          page: <HomePage></HomePage>,
+      }
+
+      this.handlePageChange = this.handlePageChange.bind(this);
+  }
+
+  handlePageChange(page_to_change) {
+      if (page_to_change === 'shopping_list') {
+          this.setState({page:<ShoppingList></ShoppingList>})
+      } else {
+          this.setState({page:<HomePage></HomePage>})
+      }
+  }
+
+  render() {
+      return (
+        <MiniDrawer handlePageChange={this.handlePageChange} page_to_render={this.state.page}></MiniDrawer>
+      )
+  }
+}
 
 const drawerWidth = 240;
 
@@ -92,7 +118,7 @@ const useStyles = makeStyles((theme) => ({
 
 const icon_style = { marginTop: -7 }
 
-export default function MiniDrawer() {
+function MiniDrawer(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -152,11 +178,11 @@ export default function MiniDrawer() {
         </div>
         <Divider />
         <List>
-          <ListItem button key="home">
+          <ListItem button key="home" onClick={() => props.handlePageChange('home')}>
             <ListItemIcon><HomeIcon></HomeIcon></ListItemIcon>
             <ListItemText>Home</ListItemText>
           </ListItem>
-          <ListItem button key="shopping_list">
+          <ListItem button key="shopping_list" onClick={() => props.handlePageChange('shopping_list')}>
             <ListItemIcon><ListAltIcon></ListAltIcon></ListItemIcon>
             <ListItemText>Shopping List</ListItemText>
           </ListItem>
@@ -164,8 +190,10 @@ export default function MiniDrawer() {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Homepage></Homepage>
+        {props.page_to_render}
       </main>
     </div>
   );
 }
+
+export default MasterContainer;
