@@ -75,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
     }),
   },
   menuButton: {
-    marginRight: 36,
+    marginRight: '1%',
   },
   hide: {
     display: 'none',
@@ -115,6 +115,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  mainContent: {
+    marginTop: -25,
+  }
 }));
 
 // Our navbar setup, as well as links to pages, is here
@@ -197,7 +200,9 @@ function MiniDrawer(props) {
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
+        <div className={classes.mainContent}>
         {props.page_to_render}
+        </div>
       </main>
     </div>
   );

@@ -15,6 +15,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { IconButton } from '@material-ui/core';
+import GetCookie from './GetCookie';
 
 class ShoppingListForm extends React.Component {
     constructor(props) {
@@ -36,6 +37,22 @@ class ShoppingListForm extends React.Component {
         this.deleteEntry = this.deleteEntry.bind(this);
         this.incrementQty = this.incrementQty.bind(this);
         this.decrementQty = this.decrementQty.bind(this);
+        this.updateListCookie = this.updateListCookie.bind(this);
+    }
+
+    componentDidMount() { // Load list from cookie if present
+        const cookie_shopping_list_str = GetCookie('shopping_list');
+        if (cookie_shopping_list_str !== '') {
+            const shopping_list = JSON.parse(cookie_shopping_list_str);
+            this.setState({list_contents:shopping_list});
+        } else {
+            console.log('No shopping_list cookie present');
+        }
+    }
+
+    updateListCookie() {
+        let oneYearFromNow = new Date(new Date().setFullYear(new Date().getFullYear() + 1)) // set cookie to expire one year from now
+        document.cookie = "shopping_list=" + JSON.stringify(this.state.list_contents) + "; expires=" + oneYearFromNow;
     }
 
     handleChange(event) {
@@ -59,7 +76,7 @@ class ShoppingListForm extends React.Component {
             quantity: parseInt(this.state.quantity, 10),
         };
 
-        const current_list = this.state.list_contents;
+        let current_list = this.state.list_contents;
 
         let list_items_only = [];
         for (let i = 0; i < current_list.length; i++) {
@@ -69,15 +86,18 @@ class ShoppingListForm extends React.Component {
 
         if (entry.item !== '' && entry.quantity > 0 && !list_items_only.includes(entry.item)) {
             
-            this.state.list_contents.push(entry);
+            current_list.push(entry);
+
             this.setState({
                 item: '',
                 quantity: 1,
+                list_contents: current_list,
                 item_error: false,
                 item_error_text: '',
                 qty_error: false,
                 qty_error_text: '',
             });
+            this.updateListCookie()
         }
         
         if (entry.quantity > 0 && list_items_only.includes(entry.item)) {
@@ -104,6 +124,7 @@ class ShoppingListForm extends React.Component {
         this.setState({
             list_contents: current_items_list
         });
+        this.updateListCookie()
     }
 
     incrementQty(list_entry) {
@@ -116,6 +137,7 @@ class ShoppingListForm extends React.Component {
         this.setState({
             list_contents: current_items_list
         })
+        this.updateListCookie()
     }
 
     decrementQty(list_entry) {
@@ -130,12 +152,13 @@ class ShoppingListForm extends React.Component {
         this.setState({
             list_contents: current_items_list
         })
+        this.updateListCookie()
     }
 
     render() {
         return (
             <div id="shopping-list-container">
-            <h3>Shopping List</h3>
+            <h1>Shopping List</h1>
             <form onSubmit={this.handleSubmit}>
                 <TextField variant="standard" name="item" id="input_item" label="Item" 
                     onChange={this.handleChange} value={this.state.item}
