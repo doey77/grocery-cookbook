@@ -18,6 +18,13 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import Grid from '@material-ui/core/Grid';
 
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
+
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import HomeIcon from '@material-ui/icons/Home';
 
@@ -136,6 +143,7 @@ function MiniDrawer(props) {
 
   return (
     <div className={classes.root}>
+      <Router>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -188,22 +196,40 @@ function MiniDrawer(props) {
         </div>
         <Divider />
         <List>
-          <ListItem button key="home" onClick={() => props.handlePageChange('home')}>
+        
+
+          <Link to="/">
+          <ListItem button key="home" /*onClick={() => props.handlePageChange('home')}*/>
             <ListItemIcon><HomeIcon></HomeIcon></ListItemIcon>
             <ListItemText>Home</ListItemText>
           </ListItem>
-          <ListItem button key="shopping_list" onClick={() => props.handlePageChange('shopping_list')}>
+          </Link>
+
+          <Link to="/shoppinglist/">
+          <ListItem button key="shopping_list" /*onClick={() => props.handlePageChange('shopping_list')}*/>
             <ListItemIcon><ListAltIcon></ListAltIcon></ListItemIcon>
             <ListItemText>Shopping List</ListItemText>
           </ListItem>
+          </Link>
+
+        
         </List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <div className={classes.mainContent}>
-        {props.page_to_render}
+        <Switch>
+          <Route exact path="/">
+            <HomePage></HomePage>
+          </Route>
+          <Route path="/shoppinglist/">
+            <ShoppingList></ShoppingList>
+          </Route>
+        </Switch>
+        {/* {props.page_to_render} */}
         </div>
       </main>
+      </Router>
     </div>
   );
 }
