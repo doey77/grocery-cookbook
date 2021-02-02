@@ -34,32 +34,6 @@ import { Button } from '@material-ui/core';
 import ShoppingList from './ShoppingList';
 import HomePage from './Homepage';
 
-// Handles the main content area
-class MasterContainer extends React.Component {
-  constructor(props) {
-      super(props);
-      this.state = {
-          page: <HomePage></HomePage>,
-      }
-
-      this.handlePageChange = this.handlePageChange.bind(this);
-  }
-
-  handlePageChange(page_to_change) {
-      if (page_to_change === 'shopping_list') {
-          this.setState({page:<ShoppingList></ShoppingList>})
-      } else {
-          this.setState({page:<HomePage></HomePage>})
-      }
-  }
-
-  render() {
-      return (
-        <MiniDrawer handlePageChange={this.handlePageChange} page_to_render={this.state.page}></MiniDrawer>
-      )
-  }
-}
-
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -124,11 +98,15 @@ const useStyles = makeStyles((theme) => ({
   },
   mainContent: {
     marginTop: -25,
+  },
+  link: {
+    textDecoration: 'none',
+    color: 'black',
   }
 }));
 
 // Our navbar setup, as well as links to pages, is here
-function MiniDrawer(props) {
+export default function MiniDrawer(props) {
   const classes = useStyles();
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -198,15 +176,15 @@ function MiniDrawer(props) {
         <List>
         
 
-          <Link to="/">
-          <ListItem button key="home" /*onClick={() => props.handlePageChange('home')}*/>
+          <Link className={classes.link} to="/">
+          <ListItem button key="home">
             <ListItemIcon><HomeIcon></HomeIcon></ListItemIcon>
             <ListItemText>Home</ListItemText>
           </ListItem>
           </Link>
 
-          <Link to="/shoppinglist/">
-          <ListItem button key="shopping_list" /*onClick={() => props.handlePageChange('shopping_list')}*/>
+          <Link className={classes.link} to="/shoppinglist/">
+          <ListItem button key="shopping_list">
             <ListItemIcon><ListAltIcon></ListAltIcon></ListItemIcon>
             <ListItemText>Shopping List</ListItemText>
           </ListItem>
@@ -226,12 +204,9 @@ function MiniDrawer(props) {
             <ShoppingList></ShoppingList>
           </Route>
         </Switch>
-        {/* {props.page_to_render} */}
         </div>
       </main>
       </Router>
     </div>
   );
 }
-
-export default MasterContainer;
