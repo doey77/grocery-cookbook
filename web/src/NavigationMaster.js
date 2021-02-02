@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Icon from './favicon.png'
+import Icon from './images/favicon.png'
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -31,8 +31,8 @@ import HomeIcon from '@material-ui/icons/Home';
 import { Button } from '@material-ui/core';
 
 // Import different pages here
-import ShoppingList from './ShoppingList';
-import HomePage from './Homepage';
+import ShoppingList from './pages/ShoppingList';
+import HomePage from './pages/Homepage';
 
 const drawerWidth = 240;
 

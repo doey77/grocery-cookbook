@@ -28,9 +28,9 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { Grid, IconButton } from '@material-ui/core';
-import GetCookie from './common-functions/GetCookie';
+import GetCookie from '../common-functions/GetCookie';
 
-import './css/ShoppingList.css';
+import '../css/ShoppingList.css';
 
 class ShoppingListForm extends React.Component {
     constructor(props) {
