@@ -4,6 +4,7 @@ import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
 import UpIcon from '@material-ui/icons/ArrowUpward';
 import DownIcon from '@material-ui/icons/ArrowDownward';
+import EditIcon from '@material-ui/icons/Edit';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
@@ -51,6 +52,10 @@ class ShoppingListForm extends React.Component {
             qty_error: false,
 
             show_add_list: false,
+
+            add_list_name: '',
+            add_list_name_error: false,
+            add_list_name_error_text: '',
         }
 
         this.handleChange = this.handleChange.bind(this);
@@ -62,6 +67,7 @@ class ShoppingListForm extends React.Component {
         this.updateListCookie = this.updateListCookie.bind(this);
         this.toggleCreateList = this.toggleCreateList.bind(this);
         this.handleSubmitNewList = this.handleSubmitNewList.bind(this);
+        this.handleChangeNewList = this.handleChangeNewList.bind(this);
     }
 
     componentDidMount() { // Load list from cookie if present
@@ -216,21 +222,42 @@ class ShoppingListForm extends React.Component {
 
     handleSubmitNewList(event) {
         event.preventDefault();
-
-        console.log(event.target.value);
-
         const new_list = {
-            name: 'submitted_name',
+            name: this.state.add_list_name,
             content: []
         };
 
         let saved_lists_new = this.state.saved_lists;
-        const new_list_index = saved_lists_new.push(new_list) - 1;
-        console.log(new_list_index)
+        let name_exists = false;
+        for (let i = 0; i < saved_lists_new.length; i++) {
+            const shopping_list = saved_lists_new[i];
+            const list_name = shopping_list.name;
+            if (this.state.add_list_name === list_name) {
+                name_exists = true;
+            }
+        }
+
+        if (name_exists === false) {
+            const new_list_index = saved_lists_new.push(new_list) - 1;
+            this.setState({
+                show_add_list: false,
+                saved_lists: saved_lists_new,
+                current_list_index: new_list_index,
+            })
+            this.updateListCookie();
+        } else {
+            this.setState({
+                add_list_name_error: true,
+                add_list_name_error_text: 'A list with that name already exists'
+            })
+        }
+    }
+
+    handleChangeNewList(event) {
         this.setState({
-            show_add_list: false,
-            saved_lists: saved_lists_new,
-            current_list_index: new_list_index,
+            add_list_name: event.target.value,
+            add_list_name_error: false,
+            add_list_name_error_text: '',
         })
     }
 
@@ -241,9 +268,9 @@ class ShoppingListForm extends React.Component {
                 <Grid item>
                 <h1>Shopping List</h1>
                 </Grid>
-                <Grid item style={{marginLeft:25}}>
+                <Grid item>
                 <br />
-                <FormControl variant="outlined">
+                <FormControl variant="outlined" className="select-current-list-form">
                     <InputLabel htmlFor="outlined-age-native-simple">Current List</InputLabel>
                     <Select
                     className="select-current-list"
@@ -257,8 +284,11 @@ class ShoppingListForm extends React.Component {
                     </Select>
                 </FormControl>
                 </Grid>
-                <Grid item style={{marginTop:20,marginLeft:7}}>
+                <Grid item className="list-button">
                     <IconButton type="button" onClick={this.toggleCreateList}><AddIcon /></IconButton>
+                </Grid>
+                <Grid item className="list-button">
+                    <IconButton><EditIcon /></IconButton>
                 </Grid>
             </Grid>
 
@@ -271,6 +301,10 @@ class ShoppingListForm extends React.Component {
                     margin="dense"
                     label="List Name"
                     type="text"
+                    value={this.state.add_list_name}
+                    onChange={this.handleChangeNewList}
+                    error={this.state.add_list_name_error}
+                    helperText={this.state.add_list_name_error_text}
                     fullWidth
                 />
                 </DialogContent>

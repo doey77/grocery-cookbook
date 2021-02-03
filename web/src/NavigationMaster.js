@@ -27,8 +27,9 @@ import {
 
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import HomeIcon from '@material-ui/icons/Home';
-
-import { Button } from '@material-ui/core';
+import ShoppingIcon from '@material-ui/icons/ShoppingCart';
+import UserIcon from '@material-ui/icons/AccountCircle';
+import FridgeIcon from '@material-ui/icons/Kitchen';
 
 // Import different pages here
 import ShoppingList from './pages/ShoppingList';
@@ -151,7 +152,6 @@ export default function MiniDrawer(props) {
             </Grid>
           </Grid>
 
-          <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -178,24 +178,50 @@ export default function MiniDrawer(props) {
 
           <Link className={classes.link} to="/">
           <ListItem button key="home">
-            <ListItemIcon><HomeIcon></HomeIcon></ListItemIcon>
+            <ListItemIcon><HomeIcon /></ListItemIcon>
             <ListItemText>Home</ListItemText>
           </ListItem>
           </Link>
 
           <Link className={classes.link} to="/shoppinglist/">
           <ListItem button key="shopping_list">
-            <ListItemIcon><ListAltIcon></ListAltIcon></ListItemIcon>
+            <ListItemIcon><ShoppingIcon /></ListItemIcon>
             <ListItemText>Shopping List</ListItemText>
           </ListItem>
           </Link>
 
+          <Link className={classes.link} to="/recipes/">
+          <ListItem button key="recipes">
+            <ListItemIcon><ListAltIcon /></ListItemIcon>
+            <ListItemText>Recipes</ListItemText>
+          </ListItem>
+          </Link>
+
+          <Link className={classes.link} to="/fridgetracker/">
+          <ListItem button key="fridgetracker">
+            <ListItemIcon><FridgeIcon /></ListItemIcon>
+            <ListItemText>Fridge Tracker</ListItemText>
+          </ListItem>
+          </Link>
+
+          <br /><Divider /><br />
+
+          <Link className={classes.link} to="/login/">
+          <ListItem button key="login">
+            <ListItemIcon><UserIcon /></ListItemIcon>
+            <ListItemText>Login</ListItemText>
+          </ListItem>
+          </Link>
         
         </List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <div className={classes.mainContent}>
+        <Grid container spacing={0} direction="column" 
+        alignItems="center" justify="center" 
+        >
+        <Grid item>
         <Switch>
           <Route exact path="/">
             <HomePage></HomePage>
@@ -203,7 +229,18 @@ export default function MiniDrawer(props) {
           <Route path="/shoppinglist/">
             <ShoppingList></ShoppingList>
           </Route>
+          <Route path="/recipes/">
+            <p>Recipes</p>
+          </Route>
+          <Route path="/fridgetracker/">
+            <p>Fridge Tracker here</p>
+          </Route>
+          <Route path="/login/">
+            <p>Login page here</p>
+          </Route>
         </Switch>
+        </Grid>
+        </Grid>
         </div>
       </main>
       </Router>
