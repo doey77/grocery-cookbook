@@ -56,7 +56,7 @@ class ShoppingListForm extends React.Component {
             add_list_name: '',
             add_list_name_error: false,
             add_list_name_error_text: '',
-        }
+        };
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSelectChange = this.handleSelectChange.bind(this);
@@ -81,15 +81,15 @@ class ShoppingListForm extends React.Component {
         }
 
         if (cookie_current_list_index !== '') {
-            const current_list_index_cookie = JSON.parse(cookie_current_list_index)
-            this.setState({current_list_index:current_list_index_cookie})
+            const current_list_index_cookie = JSON.parse(cookie_current_list_index);
+            this.setState({current_list_index:current_list_index_cookie});
         } else {
             console.log('No current_list_index cookie present');
         }
     }
 
     updateListCookie() {
-        const oneYearFromNow = new Date(new Date().setFullYear(new Date().getFullYear() + 1)) // set cookie to expire one year from now
+        const oneYearFromNow = new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // set cookie to expire one year from now
         document.cookie = "saved_lists=" + JSON.stringify(this.state.saved_lists) + "; expires=" + oneYearFromNow;
         document.cookie = "current_list_index=" + JSON.stringify(this.state.current_list_index);
     }
@@ -105,11 +105,11 @@ class ShoppingListForm extends React.Component {
             item_error: false,
             qty_error_text: '',
             qty_error: false,
-        })
+        });
     }
 
     handleSelectChange(event) { //handle change for select list box
-        this.setState({current_list_index: event.target.value})
+        this.setState({current_list_index: event.target.value});
     }
 
     handleSubmit(event) { //when submitting add item form
@@ -126,7 +126,7 @@ class ShoppingListForm extends React.Component {
         let list_items_only = [];
         for (let i = 0; i < current_list.length; i++) {
             const current_list_entry = current_list[i];
-            list_items_only.push(current_list_entry['item'])
+            list_items_only.push(current_list_entry['item']);
         }
 
         if (entry.item !== '' && entry.quantity > 0 && !list_items_only.includes(entry.item)) {
@@ -145,20 +145,20 @@ class ShoppingListForm extends React.Component {
                 qty_error: false,
                 qty_error_text: '',
             });
-            this.updateListCookie()
+            this.updateListCookie();
         }
         
         if (entry.quantity > 0 && list_items_only.includes(entry.item)) {
             this.setState({
                 item_error: true,
                 item_error_text: 'That item already exists'
-            })
+            });
         }
         if (entry.quantity <= 0) {
             this.setState({
                 qty_error: true,
                 qty_error_text: "Quantity must be > 0"
-            })
+            });
         }
     }
 
@@ -169,29 +169,29 @@ class ShoppingListForm extends React.Component {
             current_items_list.splice(index, 1); // remove from the list
         }
 
-        let saved_lists_new = this.state.saved_lists
-        saved_lists_new[this.state.current_list_index].content = current_items_list
+        let saved_lists_new = this.state.saved_lists;
+        saved_lists_new[this.state.current_list_index].content = current_items_list;
 
         this.setState({
             saved_lists: saved_lists_new,
         });
-        this.updateListCookie()
+        this.updateListCookie();
     }
 
     incrementQty(list_entry) {
         let current_items_list = this.state.saved_lists[this.state.current_list_index].content; // get our current list
         let index = current_items_list.indexOf(list_entry); // get index of value to adjust
         if (index !== -1) {
-            current_items_list[index].quantity += 1 // increase item qty by 1
+            current_items_list[index].quantity += 1; // increase item qty by 1
         }
 
-        let saved_lists_new = this.state.saved_lists
-        saved_lists_new[this.state.current_list_index].content = current_items_list
+        let saved_lists_new = this.state.saved_lists;
+        saved_lists_new[this.state.current_list_index].content = current_items_list;
 
         this.setState({
             saved_lists: saved_lists_new,
-        })
-        this.updateListCookie()
+        });
+        this.updateListCookie();
     }
 
     decrementQty(list_entry) {
@@ -199,24 +199,24 @@ class ShoppingListForm extends React.Component {
         let index = current_items_list.indexOf(list_entry); // get index of value to adjust
         if (index !== -1) {
             if (current_items_list[index].quantity > 1) {
-                current_items_list[index].quantity -= 1 // decrease item qty by 1
+                current_items_list[index].quantity -= 1; // decrease item qty by 1
             }
         }
 
-        let saved_lists_new = this.state.saved_lists
-        saved_lists_new[this.state.current_list_index].content = current_items_list
+        let saved_lists_new = this.state.saved_lists;
+        saved_lists_new[this.state.current_list_index].content = current_items_list;
 
         this.setState({
             saved_lists: saved_lists_new,
-        })
-        this.updateListCookie()
+        });
+        this.updateListCookie();
     }
 
     toggleCreateList(event) {
         if (this.state.show_add_list === true) {
-            this.setState({show_add_list:false})
+            this.setState({show_add_list:false});
         } else {
-            this.setState({show_add_list:true})
+            this.setState({show_add_list:true});
         }
     }
 
@@ -243,13 +243,13 @@ class ShoppingListForm extends React.Component {
                 show_add_list: false,
                 saved_lists: saved_lists_new,
                 current_list_index: new_list_index,
-            })
+            });
             this.updateListCookie();
         } else {
             this.setState({
                 add_list_name_error: true,
                 add_list_name_error_text: 'A list with that name already exists'
-            })
+            });
         }
     }
 
@@ -258,18 +258,15 @@ class ShoppingListForm extends React.Component {
             add_list_name: event.target.value,
             add_list_name_error: false,
             add_list_name_error_text: '',
-        })
+        });
     }
 
     render() {
         return (
-            <div id="shopping-list-container">
+            <div>
+            <h1>Shopping List</h1>
             <Grid container direction="row" alignItems="center">
                 <Grid item>
-                <h1>Shopping List</h1>
-                </Grid>
-                <Grid item>
-                <br />
                 <FormControl variant="outlined" className="select-current-list-form">
                     <InputLabel htmlFor="outlined-age-native-simple">Current List</InputLabel>
                     <Select
@@ -321,18 +318,19 @@ class ShoppingListForm extends React.Component {
 
             <br />
             
-            <form onSubmit={this.handleSubmit}>
+            <form onSubmit={this.handleSubmit} style={{width:"100%"}}>
                 <TextField variant="standard" name="item" id="input_item" label="Item" 
                     onChange={this.handleChange} value={this.state.item}
                     helperText={this.state.item_error_text} error={this.state.item_error}
+                    style={{width:"65%"}}
                 />
                 <TextField
                     variant="standard" name="quantity" label="Quantity" type="number"
-                    style={{width:75}} onChange={this.handleChange}
+                    style={{width:"25%"}} onChange={this.handleChange}
                     value={this.state.quantity}
                     helperText={this.state.qty_error_text} error={this.state.qty_error}
                 />
-                <IconButton type="submit" aria-label="Add Item">
+                <IconButton type="submit" aria-label="Add Item" style={{width:"10%"}}>
                     <AddIcon />
                 </IconButton>
             </form>
