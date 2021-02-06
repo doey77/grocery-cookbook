@@ -1,9 +1,10 @@
 import React from 'react';
 import clsx from 'clsx';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme, ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Icon from './images/favicon.png';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
+import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -100,16 +101,16 @@ const useStyles = makeStyles((theme) => ({
   mainContent: {
     marginTop: -25,
   },
-  link: {
-    textDecoration: 'none',
-    color: 'black',
-  }
 }));
 
 // Our navbar setup, as well as links to pages, is here
 export default function MiniDrawer(props) {
   const classes = useStyles();
-  const theme = useTheme();
+  const theme = createMuiTheme({
+    palette: {
+      type: 'dark',
+    },
+  });
   const [open, setOpen] = React.useState(false);
 
   const handleDrawerOpen = () => {
@@ -121,7 +122,7 @@ export default function MiniDrawer(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <ThemeProvider theme={theme} className={classes.root}>
       <Router>
       <CssBaseline />
       <AppBar
@@ -176,51 +177,43 @@ export default function MiniDrawer(props) {
         <List>
         
 
-          <Link className={classes.link} to="/">
-          <ListItem button key="home">
+          <ListItem button component={Link} to={"/"} key="home">
             <ListItemIcon><HomeIcon /></ListItemIcon>
             <ListItemText>Home</ListItemText>
           </ListItem>
-          </Link>
 
-          <Link className={classes.link} to="/shoppinglist/">
-          <ListItem button key="shopping_list">
+          <ListItem button component={Link} to={"/shoppinglist/"} key="shoppinglist">
             <ListItemIcon><ShoppingIcon /></ListItemIcon>
             <ListItemText>Shopping List</ListItemText>
           </ListItem>
-          </Link>
 
-          <Link className={classes.link} to="/recipes/">
-          <ListItem button key="recipes">
+          <ListItem button component={Link} to={"/recipes/"} key="recipes">
             <ListItemIcon><ListAltIcon /></ListItemIcon>
-            <ListItemText>Recipes</ListItemText>
+            <ListItemText color="primary">Recipes</ListItemText>
           </ListItem>
-          </Link>
 
-          <Link className={classes.link} to="/fridgetracker/">
-          <ListItem button key="fridgetracker">
+          <ListItem button component={Link} to={"/fridgetracker/"} key="fridgetracker">
             <ListItemIcon><FridgeIcon /></ListItemIcon>
             <ListItemText>Fridge Tracker</ListItemText>
           </ListItem>
-          </Link>
 
           <br /><Divider /><br />
 
-          <Link className={classes.link} to="/login/">
-          <ListItem button key="login">
+          <ListItem button component={Link} to={"/login/"} key="login">
             <ListItemIcon><UserIcon /></ListItemIcon>
             <ListItemText>Login</ListItemText>
           </ListItem>
-          </Link>
         
         </List>
       </Drawer>
+
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <div className={classes.mainContent}>
         <Grid container spacing={0} direction="column" 
         alignItems="center" justify="center" 
         >
+
         <Grid item>
         <Switch>
           <Route exact path="/">
@@ -239,11 +232,12 @@ export default function MiniDrawer(props) {
             <p>Login page here</p>
           </Route>
         </Switch>
-        </Grid>
+        </Grid>        
+
         </Grid>
         </div>
       </main>
       </Router>
-    </div>
+    </ThemeProvider>
   );
 }
