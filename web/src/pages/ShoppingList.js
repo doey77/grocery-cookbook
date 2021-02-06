@@ -52,10 +52,13 @@ class ShoppingListForm extends React.Component {
             qty_error: false,
 
             show_add_list: false,
+            show_edit_list: false,
 
             add_list_name: '',
             add_list_name_error: false,
             add_list_name_error_text: '',
+
+            edit_list_name: '',
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -66,11 +69,21 @@ class ShoppingListForm extends React.Component {
         this.decrementQty = this.decrementQty.bind(this);
         this.updateListCookie = this.updateListCookie.bind(this);
         this.toggleCreateList = this.toggleCreateList.bind(this);
+        this.toggleEditList = this.toggleEditList.bind(this);
         this.handleSubmitNewList = this.handleSubmitNewList.bind(this);
+        this.handleSubmitEditList = this.handleSubmitEditList.bind(this);
         this.handleChangeNewList = this.handleChangeNewList.bind(this);
+        this.handleChangeEditList = this.handleChangeEditList.bind(this);
     }
 
-    componentDidMount() { // Load list from cookie if present
+    componentDidMount() { 
+
+        // Update current list name
+        this.setState({
+            edit_list_name: this.state.saved_lists[this.state.current_list_index].name
+        });
+
+        // Load list from cookie if present
         const cookie_saved_lists_str = GetCookie('saved_lists');
         const cookie_current_list_index = GetCookie('current_list_index');
         if (cookie_saved_lists_str !== '') {
@@ -220,6 +233,17 @@ class ShoppingListForm extends React.Component {
         }
     }
 
+    toggleEditList(event) {
+        this.setState({
+            edit_list_name: this.state.saved_lists[this.state.current_list_index].name,
+        });
+        if (this.state.show_edit_list === true) {
+            this.setState({show_edit_list: false});
+        } else {
+            this.setState({show_edit_list:true});
+        }
+    }
+
     handleSubmitNewList(event) {
         event.preventDefault();
         const new_list = {
@@ -253,6 +277,18 @@ class ShoppingListForm extends React.Component {
         }
     }
 
+    handleSubmitEditList(event) {
+        event.preventDefault();
+        const new_name = this.state.edit_list_name;
+        let saved_lists = this.state.saved_lists;
+        saved_lists[this.state.current_list_index].name = new_name;
+        this.setState({
+            saved_lists: saved_lists,
+            show_edit_list: false,
+        });
+        this.updateListCookie();
+    }
+
     handleChangeNewList(event) {
         this.setState({
             add_list_name: event.target.value,
@@ -261,11 +297,17 @@ class ShoppingListForm extends React.Component {
         });
     }
 
+    handleChangeEditList(event) {
+        this.setState({
+            edit_list_name: event.target.value,
+        });
+    }
+
     render() {
         return (
             <div>
             <h1>Shopping List</h1>
-            <Grid container direction="row" alignItems="center">
+            <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
                 <Grid item>
                 <FormControl variant="outlined" className="select-current-list-form">
                     <InputLabel htmlFor="outlined-age-native-simple">Current List</InputLabel>
@@ -285,12 +327,12 @@ class ShoppingListForm extends React.Component {
                     <IconButton type="button" onClick={this.toggleCreateList}><AddIcon /></IconButton>
                 </Grid>
                 <Grid item className="list-button">
-                    <IconButton><EditIcon /></IconButton>
+                    <IconButton type="button" onClick={this.toggleEditList}><EditIcon /></IconButton>
                 </Grid>
             </Grid>
 
-            <Dialog open={this.state.show_add_list} onClose={this.toggleCreateList} aria-labelledby="form-dialog-title">
-                <DialogTitle id="form-dialog-title">New Shopping List</DialogTitle>
+            <Dialog open={this.state.show_add_list} onClose={this.toggleCreateList} aria-labelledby="create-new-list">
+                <DialogTitle id="create-new-list">New Shopping List</DialogTitle>
                 <form>
                 <DialogContent>
                 <TextField
@@ -314,6 +356,38 @@ class ShoppingListForm extends React.Component {
                 </Button>
                 </DialogActions>
                 </form>
+            </Dialog>
+
+            <Dialog open={this.state.show_edit_list} onClose={this.toggleEditList} aria-labelledby="edit-list">
+                <DialogTitle id="edit-list">
+                <Grid container direction="row" alignItems="center" justify="space-between">
+                    <Grid item>Manage {this.state.saved_lists[this.state.current_list_index].name}</Grid>
+                    <Grid item><IconButton type="button"><DeleteIcon /></IconButton></Grid>
+                </Grid>
+                </DialogTitle>
+                    <DialogContent>
+                    <form>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label={"List #" + (this.state.current_list_index+1)}
+                        type="text"
+                        value={this.state.edit_list_name}
+                        onChange={this.handleChangeEditList}
+                        // error={this.state.edit_list_name_error}
+                        // helperText={this.state.edit_list_name_error_text}
+                        fullWidth
+                    />
+                    <DialogActions>
+                    <Button type="button" onClick={this.toggleEditList} color="primary">
+                        Cancel
+                    </Button>
+                    <Button type="submit" onClick={this.handleSubmitEditList} color="primary">
+                        Update Name
+                    </Button>
+                    </DialogActions>
+                    </form>
+                    </DialogContent>
             </Dialog>
 
             <br />
