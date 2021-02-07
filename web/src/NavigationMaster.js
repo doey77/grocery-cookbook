@@ -35,6 +35,7 @@ import FridgeIcon from '@material-ui/icons/Kitchen';
 // Import different pages here
 import ShoppingList from './pages/ShoppingList';
 import HomePage from './pages/Homepage';
+import { blue, red } from '@material-ui/core/colors';
 
 const drawerWidth = 240;
 
@@ -106,8 +107,15 @@ const useStyles = makeStyles((theme) => ({
 // Our navbar setup, as well as links to pages, is here
 export default function MiniDrawer(props) {
   const classes = useStyles();
+  // https://material-ui.com/customization/color/
   const theme = createMuiTheme({
     palette: {
+      primary: {
+        main: '#7986cb',
+      },
+      secondary: {
+        main: '#ff1744',
+      },
       type: 'dark',
     },
   });
