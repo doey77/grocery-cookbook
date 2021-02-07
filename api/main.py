@@ -53,3 +53,15 @@ def create_item_for_user(
 def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     items = crud.get_items(db, skip=skip, limit=limit)
     return items
+
+@app.post("/shoppinglist/", response_model=schemas.ShoppingLists)
+def create_shopping_list(shopping_list: schemas.ShoppingListsCreate, db: Session = Depends(get_db)):
+    return crud.create_shopping_list(db=db, shopping_list=shopping_list)
+
+@app.post("/shoppinglist/{shoppinglist_id}/items/", response_model=schemas.ShoppingListItem)
+def create_shopping_list_item(shoppinglist_id: int, shoppinglist_item: schemas.ShoppingListItemCreate, db: Session = Depends(get_db)):
+    return crud.create_shopping_list_item(db=db, shoppinglist_item=shoppinglist_item, shoppinglist_id=shoppinglist_id)
+
+@app.get("/shoppinglist/", response_model=List[schemas.ShoppingLists])
+def get_shopping_lists(db: Session = Depends(get_db)):
+    return crud.get_shopping_lists(db=db)

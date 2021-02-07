@@ -24,3 +24,21 @@ class Item(Base):
     owner_id = Column(Integer, ForeignKey("users.id"))
 
     owner = relationship("User", back_populates="items")
+
+class ShoppingLists(Base):
+    __tablename__ = "shoppinglist_lists"
+
+    id = Column(Integer, primary_key=True, index=True)
+    list_name = Column(String(length=100), index=True)
+
+    shoppinglist_items = relationship("ShoppingListItem", back_populates="shoppinglist")
+
+class ShoppingListItem(Base):
+    __tablename__ = "shoppinglist_items"
+
+    id = Column(Integer, primary_key=True, index=True)
+    item_name = Column(String(length=100), index=True)
+    quantity = Column(Integer, index=True)
+    list_id = Column(Integer, ForeignKey("shoppinglist_lists.id"))
+
+    shoppinglist = relationship("ShoppingLists", back_populates="shoppinglist_items")
