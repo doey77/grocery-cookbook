@@ -1,6 +1,8 @@
-from typing import Generator
+from typing import Generator, Any
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import as_declarative
+
 
 # postgresql://<user>:<password>@<server_addr>/<database_name>
 USERNAME = "grocery-fastapi"
@@ -19,3 +21,9 @@ def get_db() -> Generator:
         yield db
     finally:
         db.close()
+
+# Base DB Model
+@as_declarative()
+class DBBase:
+    id: Any
+    __name__: str

@@ -1,9 +1,11 @@
 from fastapi import FastAPI
 
-from .core.database import engine
-from .core.base_model import Base
+from .core.database import engine, DBBase
 
 from .shoppinglists.routes import router as shoppinglists_router
+from .users.routes import router as users_router
+
+DBBase.metadata.create_all(bind=engine)
 
 tags_metadata = [
     {
@@ -13,6 +15,10 @@ tags_metadata = [
     {
         "name": "shoppinglists",
         "description": "Operations for interacting with shopping lists",
+    },
+    {
+        "name": "users",
+        "description": "Operations for interacting with users"
     }
 ]
 
@@ -24,9 +30,8 @@ app = FastAPI(
 )
 
 app.include_router(shoppinglists_router)
+app.include_router(users_router)
 
 @app.get("/")
 def greeting():
     return {"message": "Welcome to the Grocery Cookbook API. Browse docs at /docs"}
-
-Base.metadata.create_all(bind=engine)

@@ -1,11 +1,11 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
-from ..core.base_model import Base
+from ..core.database import DBBase
 
 # Prepend models with DB to prevent confusion with schemas
 
-class DBShoppingLists(Base):
+class DBShoppingLists(DBBase):
     __tablename__ = "shoppinglist_lists"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -13,7 +13,7 @@ class DBShoppingLists(Base):
 
     shoppinglist_items = relationship("DBShoppingListItem", back_populates="shoppinglist")
 
-class DBShoppingListItem(Base):
+class DBShoppingListItem(DBBase):
     __tablename__ = "shoppinglist_items"
 
     id = Column(Integer, primary_key=True, index=True)
