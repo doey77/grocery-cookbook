@@ -5,7 +5,7 @@ from fastapi import APIRouter, Body, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from .config import settings, get_password_hash
+from .settings import settings
 from .utils import (
     generate_password_reset_token,
     send_reset_password_email,
@@ -17,8 +17,7 @@ from ..users.schemas import *
 from ..users.models import *
 from ..misc_schemas.msg import *
 from ..misc_schemas.token import *
-from .config import create_access_token
-from .auth import get_current_user
+from .auth import create_access_token, get_password_hash
 
 # Place base routes here
 

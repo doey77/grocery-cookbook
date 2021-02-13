@@ -1,10 +1,17 @@
 from typing import Any, Dict, Optional, Union
 
 from sqlalchemy.orm import Session
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from pydantic import ValidationError
+from jose import jwt
 
-from ..core.config import get_password_hash, verify_password
-
+from ..core.database import get_db
+from ..core.auth import get_password_hash, verify_password
+from ..core.settings import settings
 from ..core.crud_base import CRUDBase
+from ..misc_schemas.token import *
+
 
 from .models import *
 from .schemas import *
@@ -54,3 +61,26 @@ class CRUDUser(CRUDBase[DBUser, UserCreate, UserUpdate]):
 
 
 crud_user = CRUDUser(DBUser)
+
+reusable_oauth2 = OAuth2PasswordBearer(
+    tokenUrl=f"{settings.API_V1_STR}/auth/login/access-token"
+)
+
+def get_current_user(
+    db: Session = Depends(get_db), token: str = Depends(reusable_oauth2)
+) -> DBUser:
+    try:
+        payload = jwt.decode(
+            token, settings.SECRET_KEY, algorithms=[settings.SECURITY_ALGORITHM]
+        )
+        token_data = TokenPayload(**payload)
+    except (jwt.JWTError, ValidationError) as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+        )
+    user = crud_user.crud_get(db, id=token_data.sub)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

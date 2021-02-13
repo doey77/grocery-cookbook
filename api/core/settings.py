@@ -59,8 +59,6 @@ class Settings(BaseSettings):
         )
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
-    FIRST_SUPERUSER: EmailStr = "doey08@gmail.com"
-    FIRST_SUPERUSER_PASSWORD: str = "JAadmin7280"
     USERS_OPEN_REGISTRATION: bool = False
 
     class Config:
