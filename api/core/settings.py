@@ -59,7 +59,7 @@ class Settings(BaseSettings):
         )
 
     EMAIL_TEST_USER: EmailStr = "test@example.com"  # type: ignore
-    USERS_OPEN_REGISTRATION: bool = False
+    USERS_OPEN_REGISTRATION: bool = True
 
     class Config:
         case_sensitive = True
