@@ -1,50 +1,45 @@
 from sqlalchemy.orm import Session
+from fastapi.encoders import jsonable_encoder
 
+from ..core.crud_base import CRUDBase
 from .schemas import *
 from .models import *
 
-# Prepend crud functions with crud_ to avoid confusion with routes
 
-def crud_create_shopping_list(db: Session, shopping_list: ShoppingListsCreate) -> Session.query:
-    """Create a shopping list
+class CRUDShoppingLists(CRUDBase[DBShoppingLists, ShoppingListsCreate, ShoppingListsUpdate]):
+    def crud_create_as_user(
+        self, db: Session, *, obj_in: ShoppingListItemCreate, user_id: int
+    ) -> DBShoppingLists:
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data, user_id=user_id)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
 
-    Args:
-        db (Session): Database session
-        shopping_list (ShoppingListsCreate): Schema
+    def crud_get_multi_by_user(
+        self, db: Session, *, user_id: int, skip: int = 0, limit: int = 100
+    ) -> List[DBShoppingLists]:
+        return (
+            db.query(self.model)
+            .filter(DBShoppingLists.user_id == user_id)
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
 
-    Returns:
-        Session.query: Query result
-    """
-    db_list = DBShoppingLists(**shopping_list.dict())
-    db.add(db_list)
-    db.commit()
-    db.refresh(db_list)
-    return db_list
+crud_shoppinglists = CRUDShoppingLists(DBShoppingLists)
 
-def crud_create_shopping_list_item(db: Session, shoppinglist_item: ShoppingListItemCreate, shoppinglist_id: int) -> Session.query:
-    """Create an item on a shopping list
+class CRUDShoppingListItem(CRUDBase[DBShoppingListItem, ShoppingListItemCreate, ShoppingListItemUpdate]):
+    def crud_create(self, db: Session, *,
+        obj_in: ShoppingListItemCreate,
+        shoppinglist_id: int) -> DBShoppingListItem:
+        """Overwrite create to include shoppinglist_id"""
+        obj_in_data = jsonable_encoder(obj_in)
+        db_obj = self.model(**obj_in_data, list_id=shoppinglist_id)
+        db.add(db_obj)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
 
-    Args:
-        db (Session): Database session
-        shoppinglist_item (ShoppingListItemCreate): Schema
-        shoppinglist_id (int): ID of Shopping list to append item to
-
-    Returns:
-        Session.query: Query result
-    """
-    db_list_item = DBShoppingListItem(**shoppinglist_item.dict(), list_id=shoppinglist_id)
-    db.add(db_list_item)
-    db.commit()
-    db.refresh(db_list_item)
-    return db_list_item
-
-def crud_get_shopping_lists(db: Session) -> Session.query:
-    """Gets all shopping lists with contents
-
-    Args:
-        db (Session): Database session
-
-    Returns:
-        Session.query: Query result
-    """
-    return db.query(DBShoppingLists).all()
+crud_shoppinglistitem = CRUDShoppingListItem(DBShoppingListItem)

@@ -128,7 +128,6 @@ def update_user(
     db: Session = Depends(get_db),
     user_id: int,
     user_in: UserUpdate,
-    current_user: DBUser = Depends(get_current_user),
 ) -> Any:
     """
     Update a user.

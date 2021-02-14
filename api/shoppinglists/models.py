@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 from sqlalchemy.orm import relationship
 
 from ..core.database import DBBase
+from ..users.models import DBUser
 
 # Prepend models with DB to prevent confusion with schemas
 
@@ -10,6 +11,7 @@ class DBShoppingLists(DBBase):
 
     id = Column(Integer, primary_key=True, index=True)
     list_name = Column(String(length=100), index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
 
     shoppinglist_items = relationship("DBShoppingListItem", back_populates="shoppinglist")
 
