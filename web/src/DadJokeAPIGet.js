@@ -1,6 +1,6 @@
 import React from 'react';
 import axios from 'axios';
-import Button from '@material-ui/core/Button'
+import Button from '@material-ui/core/Button';
 
 class DadJokeAPIGet extends React.Component {
   constructor(props) {
@@ -22,7 +22,7 @@ class DadJokeAPIGet extends React.Component {
       headers: {
         "Accept": "application/json"
       }
-    }
+    };
     axios.get('https://icanhazdadjoke.com/',config)
       .then(result => {
         this.setState({
@@ -32,7 +32,7 @@ class DadJokeAPIGet extends React.Component {
       })
       .catch(error => {
         console.log(error);
-      })
+      });
   }
 
   render() {
