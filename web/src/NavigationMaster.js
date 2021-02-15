@@ -35,7 +35,7 @@ import FridgeIcon from '@material-ui/icons/Kitchen';
 // Import different pages here
 import ShoppingList from './pages/ShoppingList';
 import HomePage from './pages/Homepage';
-import { blue, red } from '@material-ui/core/colors';
+import LoginPage from './pages/Login';
 
 const drawerWidth = 240;
 
@@ -217,18 +217,18 @@ export default function MiniDrawer(props) {
 
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <div className={classes.mainContent}>
-        <Grid container spacing={0} direction="column" 
-        alignItems="center" justify="center" 
+        <div>
+        <Grid container spacing={0} direction="row"
+        alignItems="center" justify="center"
         >
 
         <Grid item>
         <Switch>
           <Route exact path="/">
-            <HomePage></HomePage>
+            <HomePage />
           </Route>
           <Route path="/shoppinglist/">
-            <ShoppingList></ShoppingList>
+            <ShoppingList />
           </Route>
           <Route path="/recipes/">
             <p>Recipes</p>
@@ -237,7 +237,7 @@ export default function MiniDrawer(props) {
             <p>Fridge Tracker here</p>
           </Route>
           <Route path="/login/">
-            <p>Login page here</p>
+            <LoginPage />
           </Route>
         </Switch>
         </Grid>        

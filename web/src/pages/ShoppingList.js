@@ -5,6 +5,7 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import UpIcon from '@material-ui/icons/ArrowUpward';
 import DownIcon from '@material-ui/icons/ArrowDownward';
 import EditIcon from '@material-ui/icons/Edit';
+import SaveIcon from '@material-ui/icons/Save';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
 
@@ -31,6 +32,9 @@ import TableRow from '@material-ui/core/TableRow';
 import { Grid, IconButton } from '@material-ui/core';
 import GetCookie from '../common-functions/GetCookie';
 
+import axios from 'axios';
+
+import apiSettings from '../common-functions/APISettings';
 import '../css/ShoppingList.css';
 
 class ShoppingListForm extends React.Component {
@@ -74,6 +78,7 @@ class ShoppingListForm extends React.Component {
         this.handleSubmitEditList = this.handleSubmitEditList.bind(this);
         this.handleChangeNewList = this.handleChangeNewList.bind(this);
         this.handleChangeEditList = this.handleChangeEditList.bind(this);
+        this.saveLists = this.saveLists.bind(this);
     }
 
     componentDidMount() { 
@@ -303,10 +308,23 @@ class ShoppingListForm extends React.Component {
         });
     }
 
+    saveLists(event) {
+        axios.get(apiSettings.url + "shoppinglists/",apiSettings.config)
+        .then(result => {
+          console.log(result);
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+
     render() {
         return (
             <div>
-            <h1>Shopping List</h1>
+            <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
+                <Grid item><h1>Shopping List</h1></Grid>
+                <Grid item><IconButton type="button" onClick={this.saveLists}><SaveIcon /></IconButton></Grid>
+            </Grid>
             <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
                 <Grid item>
                 <FormControl variant="outlined" className="select-current-list-form">
