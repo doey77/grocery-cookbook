@@ -14,8 +14,9 @@ class LoginPage extends React.Component {
         this.state = {
             email: '',
             password: '',
-            alertOpen: true,
-            alertMessage: 'msg',
+
+            alertOpen: false,
+            errMsg: '',
         };
 
         this.handleEmailChange = this.handleEmailChange.bind(this);
@@ -53,7 +54,11 @@ class LoginPage extends React.Component {
         .catch(error => {
             const rsp = error.response;
             if (rsp.status === 400) {
-                console.log(rsp.data.detail);
+                this.setState({
+                    errMsg: rsp.data.detail,
+                    alertOpen: true,
+                });
+                console.log(rsp);
             } else {
 
             }
@@ -73,7 +78,7 @@ class LoginPage extends React.Component {
                 /> <br /> <br />
                 <Button type="submit" onClick={this.submitLogin} variant="contained" color="primary">Login</Button>
             </form>
-            <Alert />
+            <Alert alertMessage={this.state.errMsg} variant="error" alertOpen={this.state.alertOpen}/>
         </div>
         );
     }

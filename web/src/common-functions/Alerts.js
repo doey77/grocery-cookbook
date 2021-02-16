@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
 
@@ -6,14 +7,9 @@ class Alert extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            // Public states
-            // eslint-disable-next-line react/prop-types
             alertMessage: this.props.alertMessage,
-            // eslint-disable-next-line react/prop-types
             variant: this.props.variant,
-
-            // Private states
-            alertOpen: true,
+            alertOpen: this.props.alertOpen,
         };
 
         this.handleAlertClose = this.handleAlertClose.bind(this);
@@ -42,6 +38,21 @@ class Alert extends React.Component {
     }
 }
 
-export default function Alerts() {
-    return (<Alert alertMessage="msg" variant="error"/>);
+Alert.propTypes = {
+    alertMessage: PropTypes.string,
+    variant: PropTypes.oneOf(['error', 'warning', 'info', 'success']),
+    alertOpen: PropTypes.bool,
+};
+
+Alerts.propTypes = {
+    alertMessage: Alert.propTypes.alertMessage,
+    variant: Alert.propTypes.variant,
+    alertOpen: Alert.propTypes.alertOpen,
+};
+
+export default function Alerts(props) {
+    return (<Alert
+        alertMessage={props.alertMessage} variant={props.variant}
+        alertOpen={props.alertOpen}
+    />);
 }
