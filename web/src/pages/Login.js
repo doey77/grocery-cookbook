@@ -1,11 +1,13 @@
 import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
+import PropTypes from 'prop-types';
 
 import axios from 'axios';
 
-import Alert from '../common-functions/Alerts';
 import apiSettings from '../common-functions/APISettings';
+
+import { withSnackbar } from 'notistack';
 
 
 class LoginPage extends React.Component {
@@ -40,7 +42,7 @@ class LoginPage extends React.Component {
         event.preventDefault();
         const data = new URLSearchParams({
             'username': this.state.email,
-            'password': this.state.password
+            'password': this.state.password, // TODO: encrypt here, and decrypt at API endpoint
         });
         const config = {
             headers : {
@@ -49,18 +51,16 @@ class LoginPage extends React.Component {
         };
         axios.post(apiSettings.url+"auth/login/access-token", data, config)
         .then(result => {
+            // TODO handle login
+            this.props.enqueueSnackbar('Logged in successfully', {variant: 'success'});
             console.log(result);
         })
         .catch(error => {
             const rsp = error.response;
             if (rsp.status === 400) {
-                this.setState({
-                    errMsg: rsp.data.detail,
-                    alertOpen: true,
-                });
-                console.log(rsp);
+                this.props.enqueueSnackbar(rsp.data.detail, {variant: 'error'});
             } else {
-
+                this.props.enqueueSnackbar('Error, HTTP status code ' + rsp.status);
             }
         });
     }
@@ -78,12 +78,13 @@ class LoginPage extends React.Component {
                 /> <br /> <br />
                 <Button type="submit" onClick={this.submitLogin} variant="contained" color="primary">Login</Button>
             </form>
-            <Alert alertMessage={this.state.errMsg} variant="error" alertOpen={this.state.alertOpen}/>
         </div>
         );
     }
 }
 
-export default function Login() {
-    return (<LoginPage />);
-}
+LoginPage.propTypes = {
+    enqueueSnackbar: PropTypes.func,
+};
+
+export default withSnackbar(LoginPage);

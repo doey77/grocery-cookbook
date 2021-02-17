@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from 'react';
 import clsx from 'clsx';
 import { makeStyles, useTheme, ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Icon from './images/favicon.png';
 import Drawer from '@material-ui/core/Drawer';
 import AppBar from '@material-ui/core/AppBar';
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Toolbar from '@material-ui/core/Toolbar';
 import List from '@material-ui/core/List';
@@ -18,6 +20,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import Grid from '@material-ui/core/Grid';
+import { SnackbarProvider } from 'notistack';
 
 import {
   BrowserRouter as Router,
@@ -129,8 +132,17 @@ export default function MiniDrawer(props) {
     setOpen(false);
   };
 
+  const notistackRef = React.useRef();
+
   return (
     <ThemeProvider theme={theme} className={classes.root}>
+      <SnackbarProvider anchorOrigin={{horizontal: 'center', vertical: 'top'}}
+        ref={notistackRef}
+        action={(key) => (
+            <Button onClick={() => notistackRef.current.closeSnackbar(key)}
+              style={{ color: '#fff', fontSize: '15px' }}>✖</Button>
+        )}
+      >
       <Router>
       <CssBaseline />
       <AppBar
@@ -246,6 +258,7 @@ export default function MiniDrawer(props) {
         </div>
       </main>
       </Router>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 }
