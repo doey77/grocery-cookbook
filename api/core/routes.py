@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import Any
 
 from fastapi import APIRouter, Body, Depends, HTTPException
@@ -49,11 +49,13 @@ def login_access_token(
     elif not crud_user.crud_is_active(user):
         raise HTTPException(status_code=400, detail="Inactive user")
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    expires_utc = datetime.utcnow() + access_token_expires
     return {
         "access_token": create_access_token(
             user.id, expires_delta=access_token_expires
         ),
-        "token_type": "bearer",
+        "token_type": "Bearer",
+        "expires": expires_utc.strftime("%Y-%m-%d %H:%M"),
     }
 
 

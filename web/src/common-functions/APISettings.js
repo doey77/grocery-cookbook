@@ -1,3 +1,5 @@
+import GetCookie from './GetCookie';
+
 // Settings for using FastAPI backend
 
 const host = "http://127.0.0.1:8000";
@@ -7,6 +9,13 @@ const apiSettings = {
     config: {
         headers: {
             "Accept": "*"
+        }
+    },
+    config_auth: {
+        headers: {
+            "Accept": "*",
+            "Authorization": 
+            GetCookie("access_token_type") + " " + GetCookie("access_token"),
         }
     }
 };

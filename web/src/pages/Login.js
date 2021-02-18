@@ -52,15 +52,24 @@ class LoginPage extends React.Component {
         axios.post(apiSettings.url+"auth/login/access-token", data, config)
         .then(result => {
             // TODO handle login
+            const access_token_split = result.data.access_token.split(".");
+            const token_type = result.data.token_type;
+            const expires = result.data.expires; // Stored as UTC
+
+            document.cookie = "access_token="+result.data.access_token+"; samesite=strict";
+            document.cookie = "access_token_type="+token_type+";";
+            document.cookie = "access_token_expires="+expires+";";
+
             this.props.enqueueSnackbar('Logged in successfully', {variant: 'success'});
-            console.log(result);
         })
         .catch(error => {
             const rsp = error.response;
             if (rsp.status === 400) {
                 this.props.enqueueSnackbar(rsp.data.detail, {variant: 'error'});
+            } else if (rsp.status === 422) {
+                this.props.enqueueSnackbar('Invalid input', {variant: 'error'});
             } else {
-                this.props.enqueueSnackbar('Error, HTTP status code ' + rsp.status);
+                this.props.enqueueSnackbar('Error, HTTP status code ' + rsp.status, {variant: 'error'});
             }
         });
     }
