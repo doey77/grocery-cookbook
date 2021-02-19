@@ -135,7 +135,7 @@ export default function MiniDrawer(props) {
   const notistackRef = React.useRef();
 
   return (
-    <ThemeProvider theme={theme} className={classes.root}>
+    <ThemeProvider theme={theme} >
       <SnackbarProvider anchorOrigin={{horizontal: 'center', vertical: 'top'}}
         ref={notistackRef}
         action={(key) => (
