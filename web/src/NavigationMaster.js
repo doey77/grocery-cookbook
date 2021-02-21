@@ -39,6 +39,14 @@ import FridgeIcon from '@material-ui/icons/Kitchen';
 import ShoppingList from './pages/ShoppingList';
 import HomePage from './pages/Homepage';
 import LoginPage from './pages/Login';
+import FridgeTracker from './pages/FridgeTracker';
+import Recipes from './pages/Recipes';
+
+// Import app-wide contexts here
+import { userContext } from './contexts/userContext';
+
+import axios from 'axios';
+import apiSettings from './common-functions/APISettings';
 
 const drawerWidth = 240;
 
@@ -108,7 +116,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 // Our navbar setup, as well as links to pages, is here
-export default function MiniDrawer(props) {
+function MiniDrawer(props) {
   const classes = useStyles();
   // https://material-ui.com/customization/color/
   const theme = createMuiTheme({
@@ -243,10 +251,10 @@ export default function MiniDrawer(props) {
             <ShoppingList />
           </Route>
           <Route path="/recipes/">
-            <p>Recipes</p>
+            <Recipes />
           </Route>
           <Route path="/fridgetracker/">
-            <p>Fridge Tracker here</p>
+            <FridgeTracker />
           </Route>
           <Route path="/login/">
             <LoginPage />
@@ -261,4 +269,44 @@ export default function MiniDrawer(props) {
       </SnackbarProvider>
     </ThemeProvider>
   );
+}
+
+export default class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      user: {}
+    };
+
+    this.login = this.login.bind(this); this.logout = this.logout.bind(this);
+  }
+
+  logout() {
+    this.setState({user: {}});
+  }
+
+  login() {
+    axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
+    .then(result => {
+      console.log(result);
+    })
+    .catch(error => {
+      console.log(error);
+    });
+  }
+
+  render() {
+
+    const value = {
+      user: this.state.user,
+      loginUser: this.login,
+      logoutUser: this.logout,
+    };
+
+    return (
+      <userContext.Provider value={value}>
+        <MiniDrawer />
+      </userContext.Provider>
+    );
+  }
 }

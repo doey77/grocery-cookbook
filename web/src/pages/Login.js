@@ -9,6 +9,7 @@ import apiSettings from '../common-functions/APISettings';
 
 import { withSnackbar } from 'notistack';
 
+import { userContext } from '../contexts/userContext';
 
 class LoginPage extends React.Component {
     constructor(props) {
