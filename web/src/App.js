@@ -288,11 +288,18 @@ export default class App extends React.Component {
   login() {
     axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
     .then(result => {
+      this.setState({
+
+      });
       console.log(result);
     })
     .catch(error => {
       console.log(error);
     });
+  }
+
+  componentDidMount() {
+    this.login();
   }
 
   render() {
