@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import NavigationMaster from './NavigationMaster';
+import App from './App';
 
 ReactDOM.render(
-  <NavigationMaster />,
+  <App />,
   document.getElementById('root')
 );
