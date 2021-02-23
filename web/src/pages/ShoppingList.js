@@ -30,11 +30,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { Grid, IconButton } from '@material-ui/core';
-import GetCookie from '../common-functions/GetCookie';
+import GetCookie from '../services/getCookie';
 
 import axios from 'axios';
 
-import apiSettings from '../common-functions/APISettings';
+import apiSettings from '../services/apiSettings';
 import '../css/ShoppingList.css';
 
 class ShoppingListForm extends React.Component {

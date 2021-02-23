@@ -1,6 +1,6 @@
-/* eslint-disable react/prop-types */
 import React from 'react';
 import clsx from 'clsx';
+import PropTypes from 'prop-types';
 import { makeStyles, useTheme, ThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import Icon from './images/favicon.png';
 import Drawer from '@material-ui/core/Drawer';
@@ -20,7 +20,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListAltIcon from '@material-ui/icons/ListAlt';
 import Grid from '@material-ui/core/Grid';
-import { SnackbarProvider } from 'notistack';
+import { SnackbarProvider, withSnackbar } from 'notistack';
 
 import {
   BrowserRouter as Router,
@@ -46,7 +46,7 @@ import Recipes from './pages/Recipes';
 import { userContext } from './contexts/userContext';
 
 import axios from 'axios';
-import apiSettings from './common-functions/APISettings';
+import apiSettings from './services/apiSettings';
 
 const drawerWidth = 240;
 
@@ -204,7 +204,7 @@ function MiniDrawer(props) {
         <Divider />
         <List>
         
-
+          {/* Links */}
           <ListItem button component={Link} to={"/"} key="home">
             <ListItemIcon><HomeIcon /></ListItemIcon>
             <ListItemText>Home</ListItemText>
@@ -231,7 +231,8 @@ function MiniDrawer(props) {
             <ListItemIcon><UserIcon /></ListItemIcon>
             <ListItemText>Login</ListItemText>
           </ListItem>
-        
+          {/* Links */}
+
         </List>
       </Drawer>
 
@@ -243,6 +244,7 @@ function MiniDrawer(props) {
         >
 
         <Grid item>
+        {/* Routes */}
         <Switch>
           <Route exact path="/">
             <HomePage />
@@ -260,6 +262,7 @@ function MiniDrawer(props) {
             <LoginPage />
           </Route>
         </Switch>
+        {/* Routes */}
         </Grid>        
 
         </Grid>
@@ -271,27 +274,75 @@ function MiniDrawer(props) {
   );
 }
 
-export default class App extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
-      user: {}
+      isAuthorized: false,
+      email: null, // string
+      id: null, // int
+      isSuperuser: false,
     };
 
-    this.login = this.login.bind(this); this.logout = this.logout.bind(this);
+    this.loginToken = this.loginToken.bind(this); this.logout = this.logout.bind(this);
   }
 
   logout() {
-    this.setState({user: {}});
+    this.setState({
+      isAuthorized: false,
+      email: null,
+    });
   }
 
-  login() {
+  loginEmailPassword(username, password) {
+
+    let msg = '';
+
+    const data = new URLSearchParams({
+      'username': username,
+      'password': password,
+    });
+    const config = {
+        headers : {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        }
+    };
+
+    axios.post(apiSettings.url+"auth/login/access-token", data, config)
+    .then(result => {
+        // TODO handle login
+        const token_type = result.data.token_type;
+        const expires = result.data.expires; // Stored as UTC
+
+        document.cookie = "access_token="+result.data.access_token+"; samesite=strict";
+        document.cookie = "access_token_type="+token_type+";";
+        document.cookie = "access_token_expires="+expires+";";
+
+        this.loginToken();
+    })
+    .catch(error => {
+        const rsp = error.response;
+        if (rsp.status === 400) {
+            msg = (rsp.data.detail, {variant: 'error'});
+        } else if (rsp.status === 422) {
+            msg = ('Invalid input', {variant: 'error'});
+        } else {
+            msg = ('Error, HTTP status code ' + rsp.status, {variant: 'error'});
+        }
+    });
+  }
+
+  loginToken() {
     axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
     .then(result => {
       this.setState({
-
+        isAuthorized: true,
+        email: result.data.email,
+        id: result.data.id,
+        isSuperuser: result.data.is_superuser,
       });
-      console.log(result);
+      console.log(this.state);
     })
     .catch(error => {
       console.log(error);
@@ -299,15 +350,18 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
-    this.login();
+    this.loginToken();
   }
 
   render() {
 
     const value = {
-      user: this.state.user,
-      loginUser: this.login,
-      logoutUser: this.logout,
+      isAuthorized: this.state.isAuthorized,
+      email: this.state.email,
+      id: this.state.id,
+      isSuperuser: this.state.isSuperuser,
+      loginToken: this.loginToken,
+      logout: this.logout,
     };
 
     return (
@@ -317,3 +371,5 @@ export default class App extends React.Component {
     );
   }
 }
+
+export default App;
