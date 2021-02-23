@@ -7,7 +7,7 @@ export async function loginEmailPassword(email, password) {
 
     const data = new URLSearchParams({
         'username': email,
-        'password': password, // TODO: encrypt here, and decrypt at API endpoint
+        'password': password,
     });
 
     const config = {
