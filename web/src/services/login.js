@@ -3,7 +3,7 @@ import apiSettings from '../services/apiSettings';
 
 
 export async function loginEmailPassword(email, password) {
-    let returnMsg = {};
+    let returnMsg = {msg: '', variant: ''};
 
     const data = new URLSearchParams({
         'username': email,
