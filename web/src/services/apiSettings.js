@@ -1,4 +1,4 @@
-import GetCookie from './getCookie';
+import getCookie from './getCookie';
 
 // Settings for using FastAPI backend
 
@@ -15,7 +15,7 @@ const apiSettings = {
         headers: {
             "Accept": "*",
             "Authorization": 
-            GetCookie("access_token_type") + " " + GetCookie("access_token"),
+            getCookie("access_token_type") + " " + getCookie("access_token"),
         }
     }
 };

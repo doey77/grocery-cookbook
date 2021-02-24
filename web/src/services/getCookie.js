@@ -1,4 +1,8 @@
-export default function GetCookie(cname) {
+/**
+ * Retrieve the cookie with the specified name
+ * @param {string} cname Name of the cookie
+ */
+export default function getCookie(cname) {
     var name = cname + "=";
     var decodedCookie = decodeURIComponent(document.cookie);
     var ca = decodedCookie.split(';');

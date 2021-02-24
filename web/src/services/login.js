@@ -1,7 +1,11 @@
 import axios from 'axios';
 import apiSettings from '../services/apiSettings';
 
-
+/**
+ * Login with the provider email and password
+ * @param {string} email User's email
+ * @param {string} password User's password
+ */
 export async function loginEmailPassword(email, password) {
     let returnMsg = {msg: '', variant: ''};
 
@@ -18,7 +22,6 @@ export async function loginEmailPassword(email, password) {
 
     await axios.post(apiSettings.url+"auth/login/access-token", data, config)
     .then(result => {
-        // TODO handle login
         const token_type = result.data.token_type;
         const expires = result.data.expires; // Stored as UTC
     
@@ -39,4 +42,30 @@ export async function loginEmailPassword(email, password) {
     });
 
     return returnMsg;
+}
+
+/**
+ * Get user's info based on the logged in user's JWT token, obtained from cookies
+ */
+export async function loginToken() {
+    let returnData = {};
+    
+    await axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
+    .then(result => {
+      returnData = {
+        success: true,
+        isAuthorized: true,
+        email: result.data.email,
+        id: result.data.id,
+        isSuperuser: result.data.is_superuser,
+      };
+    })
+    .catch(error => {
+      returnData = {
+          success: false,
+          error: error,
+      };
+    });
+
+    return returnData;
 }
