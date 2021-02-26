@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { withSnackbar } from 'notistack';
 
 import { userContext } from '../contexts/userContext';
-import { loginEmailPassword, loginToken } from '../services/login';
+import { loginEmailPassword, loginToken, logout } from '../services/login';
 
 
 class LoginPage extends React.Component {
@@ -22,7 +22,7 @@ class LoginPage extends React.Component {
             isAuthenticated: false,
         };
 
-        this.submitLogin = this.submitLogin.bind(this);
+        this.submitLogin = this.submitLogin.bind(this); this.logout = this.logout.bind(this);
     }
 
     async submitLogin(event) {
@@ -39,11 +39,24 @@ class LoginPage extends React.Component {
         console.log(this.state);
     }
 
+    async componentDidMount() {
+        let callMsgToken = await loginToken();
+        if (callMsgToken.success === true) {
+            this.setState({isAuthenticated: true});
+        }
+    }
+
+    logout() {
+        logout();
+        this.setState({isAuthenticated:false});
+    }
+
     render() {
         if (this.state.isAuthenticated) {
             return (
             <div>
                 <h1>Logout</h1>
+                <Button onClick={this.logout} variant="contained" color="primary">Logout</Button>
             </div>
             );
         } else {

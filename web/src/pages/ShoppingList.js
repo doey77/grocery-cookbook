@@ -30,7 +30,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 
 import { Grid, IconButton } from '@material-ui/core';
-import GetCookie from '../services/getCookie';
+import { getCookie } from '../services/cookies';
 
 import axios from 'axios';
 
@@ -89,8 +89,8 @@ class ShoppingListForm extends React.Component {
         });
 
         // Load list from cookie if present
-        const cookie_saved_lists_str = GetCookie('saved_lists');
-        const cookie_current_list_index = GetCookie('current_list_index');
+        const cookie_saved_lists_str = getCookie('saved_lists');
+        const cookie_current_list_index = getCookie('current_list_index');
         if (cookie_saved_lists_str !== '') {
             const saved_lists_cookie = JSON.parse(cookie_saved_lists_str);
             this.setState({saved_lists:saved_lists_cookie});

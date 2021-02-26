@@ -1,4 +1,4 @@
-import getCookie from './getCookie';
+import { getCookie } from './cookies';
 
 // Settings for using FastAPI backend
 

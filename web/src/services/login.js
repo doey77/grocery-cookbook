@@ -1,5 +1,6 @@
 import axios from 'axios';
 import apiSettings from '../services/apiSettings';
+import { deleteCookie, getCookie } from './cookies';
 
 /**
  * Login with the provider email and password
@@ -50,22 +51,40 @@ export async function loginEmailPassword(email, password) {
 export async function loginToken() {
     let returnData = {};
     
-    await axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
-    .then(result => {
-      returnData = {
-        success: true,
-        isAuthorized: true,
-        email: result.data.email,
-        id: result.data.id,
-        isSuperuser: result.data.is_superuser,
-      };
-    })
-    .catch(error => {
-      returnData = {
-          success: false,
-          error: error,
-      };
-    });
+    if (getCookie("access_token") === "") {
+        console.log('No access token in cookies');
+        returnData = {
+            success: false,
+            error: 'No access token in cookies',
+        };
+    } else {
+        await axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
+        .then(result => {
+          returnData = {
+            success: true,
+            isAuthorized: true,
+            email: result.data.email,
+            id: result.data.id,
+            isSuperuser: result.data.is_superuser,
+          };
+        })
+        .catch(error => {
+          returnData = {
+              success: false,
+              error: error,
+          };
+        });
+    }
 
     return returnData;
+}
+
+/**
+ * Logs the user out
+ */
+export function logout() {
+    const loginPath = "/login";
+    deleteCookie('access_token', loginPath);
+    deleteCookie('access_token_expires', loginPath);
+    deleteCookie('access_token_type', loginPath);
 }

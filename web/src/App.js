@@ -42,6 +42,8 @@ import LoginPage from './pages/Login';
 import FridgeTracker from './pages/FridgeTracker';
 import Recipes from './pages/Recipes';
 
+import { loginToken, logout } from './services/login';
+
 // Import app-wide contexts here
 import { userContext } from './contexts/userContext';
 
@@ -285,72 +287,19 @@ class App extends React.Component {
       isSuperuser: false,
     };
 
-    this.loginToken = this.loginToken.bind(this); this.logout = this.logout.bind(this);
+    this.logout = this.logout.bind(this);
   }
 
   logout() {
+    logout();
     this.setState({
       isAuthorized: false,
       email: null,
     });
   }
 
-  loginEmailPassword(username, password) {
-
-    let msg = '';
-
-    const data = new URLSearchParams({
-      'username': username,
-      'password': password,
-    });
-    const config = {
-        headers : {
-            'Content-Type': 'application/x-www-form-urlencoded'
-        }
-    };
-
-    axios.post(apiSettings.url+"auth/login/access-token", data, config)
-    .then(result => {
-        // TODO handle login
-        const token_type = result.data.token_type;
-        const expires = result.data.expires; // Stored as UTC
-
-        document.cookie = "access_token="+result.data.access_token+"; samesite=strict";
-        document.cookie = "access_token_type="+token_type+";";
-        document.cookie = "access_token_expires="+expires+";";
-
-        this.loginToken();
-    })
-    .catch(error => {
-        const rsp = error.response;
-        if (rsp.status === 400) {
-            msg = (rsp.data.detail, {variant: 'error'});
-        } else if (rsp.status === 422) {
-            msg = ('Invalid input', {variant: 'error'});
-        } else {
-            msg = ('Error, HTTP status code ' + rsp.status, {variant: 'error'});
-        }
-    });
-  }
-
-  loginToken() {
-    axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
-    .then(result => {
-      this.setState({
-        isAuthorized: true,
-        email: result.data.email,
-        id: result.data.id,
-        isSuperuser: result.data.is_superuser,
-      });
-      console.log(this.state);
-    })
-    .catch(error => {
-      console.log(error);
-    });
-  }
-
   componentDidMount() {
-    this.loginToken();
+    loginToken();
   }
 
   render() {
