@@ -26,7 +26,7 @@ export async function loginEmailPassword(email, password) {
         const token_type = result.data.token_type;
         const expires = result.data.expires; // Stored as UTC
     
-        document.cookie = "access_token="+result.data.access_token+"; samesite=strict";
+        document.cookie = "access_token="+result.data.access_token+"; samesite=strict;";
         document.cookie = "access_token_type="+token_type+";";
         document.cookie = "access_token_expires="+expires+";";
         returnMsg = {msg: 'Logged in successfully', variant: 'success'};
@@ -83,7 +83,11 @@ export async function loginToken() {
  * Logs the user out
  */
 export function logout() {
-    const loginPath = "/login";
+    let loginPath = "/login";
+    deleteCookie('access_token', loginPath);
+    deleteCookie('access_token_expires', loginPath);
+    deleteCookie('access_token_type', loginPath);
+    loginPath = "/"; // Path is sometimes /login and sometimes /
     deleteCookie('access_token', loginPath);
     deleteCookie('access_token_expires', loginPath);
     deleteCookie('access_token_type', loginPath);

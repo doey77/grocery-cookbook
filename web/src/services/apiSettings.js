@@ -14,6 +14,7 @@ const apiSettings = {
     config_auth: {
         headers: {
             "Accept": "*",
+            "Content-Type": "application/json",
             "Authorization": 
             getCookie("access_token_type") + " " + getCookie("access_token"),
         }

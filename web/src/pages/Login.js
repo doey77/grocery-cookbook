@@ -30,10 +30,9 @@ class LoginPage extends React.Component {
         let callMsg = await loginEmailPassword(this.state.email, this.state.password);
         this.props.enqueueSnackbar(callMsg.msg, {variant: callMsg.variant});
         if (callMsg.variant === 'success') {
-            let callMsgToken = await loginToken();
-            if (callMsgToken.success === true) {
-                this.setState({isAuthenticated: true});
-            }
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 1000);
         }
 
         console.log(this.state);
