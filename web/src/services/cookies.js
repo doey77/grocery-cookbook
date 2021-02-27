@@ -31,6 +31,6 @@ export function deleteCookie(cname, path) {
     const deleteCookie = cookie + expiry + cookiePath;
     document.cookie = deleteCookie;
   } else {
-    console.log('Cookie ' + cname + 'not found');
+    console.log('Cookie ' + cname + ' not found');
   }
 }
