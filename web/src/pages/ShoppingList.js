@@ -309,7 +309,7 @@ class ShoppingListForm extends React.Component {
     }
 
     saveLists(event) {
-        axios.get(apiSettings.url + "shoppinglists/",apiSettings.config_auth)
+        axios.get(apiSettings.url + "shoppinglists/",apiSettings.configAuth)
         .then(result => {
           console.log(result);
         })

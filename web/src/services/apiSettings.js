@@ -11,7 +11,7 @@ const apiSettings = {
             "Accept": "*"
         }
     },
-    config_auth: {
+    configAuth: {
         headers: {
             "Accept": "*",
             "Content-Type": "application/json",

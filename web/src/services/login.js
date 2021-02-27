@@ -56,7 +56,7 @@ export async function loginToken() {
             error: 'No access token in cookies',
         };
     } else {
-        await axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.config_auth)
+        await axios.post(apiSettings.url+"auth/login/test-token", null, apiSettings.configAuth)
         .then(result => {
           returnData = {
             success: true,
