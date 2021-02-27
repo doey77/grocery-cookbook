@@ -6,8 +6,10 @@ import UpIcon from '@material-ui/icons/ArrowUpward';
 import DownIcon from '@material-ui/icons/ArrowDownward';
 import EditIcon from '@material-ui/icons/Edit';
 import SaveIcon from '@material-ui/icons/Save';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 
 // Pop-up dialog box
 import Dialog from '@material-ui/core/Dialog';
@@ -20,6 +22,7 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu';
 
 // Table stuff
 import Table from '@material-ui/core/Table';
@@ -410,7 +413,7 @@ class ShoppingListForm extends React.Component {
 
             <br />
             
-            <form onSubmit={this.handleSubmit} style={{width:"100%"}}>
+            <form onSubmit={this.handleSubmit} style={{width:"100%", maxWidth:'600px'}}>
                 <TextField variant="standard" name="item" id="input_item" label="Item" 
                     onChange={this.handleChange} value={this.state.item}
                     helperText={this.state.item_error_text} error={this.state.item_error}
@@ -422,7 +425,7 @@ class ShoppingListForm extends React.Component {
                     value={this.state.quantity}
                     helperText={this.state.qty_error_text} error={this.state.qty_error}
                 />
-                <IconButton type="submit" aria-label="Add Item" style={{width:"10%"}}>
+                <IconButton type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
                     <AddIcon />
                 </IconButton>
             </form>
@@ -442,10 +445,11 @@ class ShoppingListForm extends React.Component {
                             <TableCell id={"id_item_" + list_entry['item']}>{list_entry['item']}</TableCell>
                             <TableCell>{list_entry['quantity']}</TableCell>
                             <TableCell>
-                                <IconButton onClick={()=>this.incrementQty(list_entry)}><UpIcon></UpIcon></IconButton>
+                                <ListItemMenu />
+                                {/* <IconButton onClick={()=>this.incrementQty(list_entry)}><UpIcon></UpIcon></IconButton>
                                 <IconButton onClick={()=>this.decrementQty(list_entry)}><DownIcon></DownIcon></IconButton>
                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <IconButton onClick={()=>this.deleteEntry(list_entry)}><DeleteIcon></DeleteIcon></IconButton>
+                                <IconButton onClick={()=>this.deleteEntry(list_entry)}><DeleteIcon></DeleteIcon></IconButton> */}
                             </TableCell>
                         </TableRow>
                         ))}
@@ -456,6 +460,38 @@ class ShoppingListForm extends React.Component {
         );
     }
 }
+
+function ListItemMenu() {
+    const [anchorEl, setAnchorEl] = React.useState(null);
+  
+    const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+    };
+  
+    const handleClose = () => {
+      setAnchorEl(null);
+    };
+  
+    return (
+      <div>
+        <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
+          <MoreVertIcon />
+        </IconButton>
+        <Menu
+          id="simple-menu"
+          anchorEl={anchorEl}
+          keepMounted
+          open={Boolean(anchorEl)}
+          onClose={handleClose}
+        >
+          <MenuItem><UpIcon />&nbsp;Increase</MenuItem>
+          <MenuItem><DownIcon />&nbsp;Decrease</MenuItem>
+          <br /><Divider /><br />
+          <MenuItem onClick={handleClose}><DeleteIcon />&nbsp;Delete</MenuItem>
+        </Menu>
+      </div>
+    );
+  }
 
 function ShoppingList() {
     return (
