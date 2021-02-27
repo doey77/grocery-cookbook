@@ -31,7 +31,9 @@ export async function loginEmailPassword(email, password) {
     })
     .catch(error => {
         const rsp = error.response;
-        if (rsp.status === 400) {
+        if (rsp === undefined) { // handle the API being unavailable
+            returnMsg = {msg: error.message, variant: 'error'};
+        } else if (rsp.status === 400) {
             returnMsg = {msg: rsp.data.detail, variant: 'error'};
         } else if (rsp.status === 422) {
             returnMsg = {msg: 'Invalid input', variant: 'error'};
