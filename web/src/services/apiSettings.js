@@ -4,7 +4,7 @@ import { getCookie } from './cookies';
 
 const host = "http://192.168.0.100:8000";
 
-const apiSettings = {
+export const apiSettings = {
     url: host + "/api/v1/",
     config: {
         headers: {
@@ -20,5 +20,3 @@ const apiSettings = {
         }
     }
 };
-
-export default apiSettings;

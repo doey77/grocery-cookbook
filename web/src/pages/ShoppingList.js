@@ -34,7 +34,7 @@ import { getCookie } from '../services/cookies';
 
 import axios from 'axios';
 
-import apiSettings from '../services/apiSettings';
+import { apiSettings } from '../services/apiSettings';
 import '../css/ShoppingList.css';
 
 class ShoppingListForm extends React.Component {

@@ -1,5 +1,5 @@
 import axios from 'axios';
-import apiSettings from '../services/apiSettings';
+import { apiSettings } from '../services/apiSettings';
 import { deleteCookie, getCookie } from './cookies';
 
 /**
