@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     SECRET_KEY: str = "6321c5eabdc6cb5077dd4e10acb939521a1278db886e638b0337fc8e4adbb9ae"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7 # 7 days
     SECURITY_ALGORITHM = "HS256"
-    SERVER_NAME: str = "localhost"
-    SERVER_HOST: AnyHttpUrl = "http://127.0.0.1"
+    SERVER_NAME: str = "192.168.0.100"
+    SERVER_HOST: AnyHttpUrl = "http://192.168.0.100"
 
     # BACKEND_CORS_ORIGINS is a JSON-formatted list of origins
     # e.g: ["http://localhost", "http://localhost:4200", "http://local.dockertoolbox.tiangolo.com"]
