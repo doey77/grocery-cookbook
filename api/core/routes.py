@@ -55,7 +55,7 @@ def login_access_token(
             user.id, expires_delta=access_token_expires
         ),
         "token_type": "Bearer",
-        "expires": expires_utc.strftime("%Y-%m-%d %H:%M"),
+        "expires": expires_utc.strftime("%Y-%m-%dT%H:%M"),
     }
 
 

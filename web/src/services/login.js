@@ -23,12 +23,10 @@ export async function loginEmailPassword(email, password) {
 
     await axios.post(apiSettings.url+"auth/login/access-token", data, config)
     .then(result => {
-        const token_type = result.data.token_type;
-        const expires = result.data.expires; // Stored as UTC
+        const expiresPy = result.data.expires; // in the format YYYY-MM-DDTHH:MM (24-hour) UTC
+        const expires = new Date(expiresPy);
     
-        document.cookie = "access_token="+result.data.access_token+"; samesite=strict;";
-        document.cookie = "access_token_type="+token_type+";";
-        document.cookie = "access_token_expires="+expires+";";
+        document.cookie = "access_token="+result.data.access_token+"; samesite=strict; expires="+expires;
         returnMsg = {msg: 'Logged in successfully', variant: 'success'};
     })
     .catch(error => {

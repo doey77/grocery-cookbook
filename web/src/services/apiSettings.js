@@ -16,7 +16,7 @@ const apiSettings = {
             "Accept": "*",
             "Content-Type": "application/json",
             "Authorization": 
-            getCookie("access_token_type") + " " + getCookie("access_token"),
+            "Bearer " + getCookie("access_token"),
         }
     }
 };
