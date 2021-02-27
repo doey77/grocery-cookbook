@@ -27,7 +27,7 @@ export async function loginEmailPassword(email, password) {
         const expires = new Date(expiresPy);
     
         document.cookie = "access_token="+result.data.access_token+"; samesite=strict; expires="+expires;
-        returnMsg = {msg: 'Logged in successfully', variant: 'success'};
+        returnMsg = {msg: 'Logged in successfully. Redirecting...', variant: 'success'};
     })
     .catch(error => {
         const rsp = error.response;

@@ -2,6 +2,7 @@ import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import PropTypes from 'prop-types';
+import Grid from '@material-ui/core/Grid';
 import { withSnackbar } from 'notistack';
 
 import { userContext } from '../contexts/userContext';
@@ -20,6 +21,9 @@ class LoginPage extends React.Component {
             errMsg: '',
             
             isAuthenticated: false,
+
+            btnDisabled: false,
+            loginBtnText: 'Login',
         };
 
         this.submitLogin = this.submitLogin.bind(this); this.logout = this.logout.bind(this);
@@ -27,15 +31,16 @@ class LoginPage extends React.Component {
 
     async submitLogin(event) {
         event.preventDefault();
+        this.setState({btnDisabled: true, loginBtnText: 'Logging In...'});
         let callMsg = await loginEmailPassword(this.state.email, this.state.password);
         this.props.enqueueSnackbar(callMsg.msg, {variant: callMsg.variant});
         if (callMsg.variant === 'success') {
             setTimeout(() => {
                 window.location.href = '/';
             }, 1000);
+        } else {
+            this.setState({btnDisabled: false, loginBtnText: 'Login'});
         }
-
-        console.log(this.state);
     }
 
     async componentDidMount() {
@@ -53,14 +58,17 @@ class LoginPage extends React.Component {
     render() {
         if (this.state.isAuthenticated) {
             return (
-            <div>
+            <Grid container justify="center">
+                <Grid item>
                 <h1>Logout</h1>
                 <Button onClick={this.logout} variant="contained" color="primary">Logout</Button>
-            </div>
+                </Grid>
+            </Grid>
             );
         } else {
             return (
-            <div>
+            <Grid container justify="center">
+                <Grid item>
                 <h1>Login</h1>
                 <form>
                     <TextField variant="outlined" type="text" label="Email" 
@@ -69,9 +77,10 @@ class LoginPage extends React.Component {
                     <TextField variant="outlined" type="password" label="Password"
                     value={this.state.password} onChange={(event) => {this.setState({password: event.target.value});}}
                     /> <br /> <br />
-                    <Button type="submit" onClick={this.submitLogin} variant="contained" color="primary">Login</Button>
+                    <Button disabled={this.state.btnDisabled} type="submit" onClick={this.submitLogin} variant="contained" color="primary">{this.state.loginBtnText}</Button>
                 </form>
-            </div>
+                </Grid>
+            </Grid>
             );
         }
 
