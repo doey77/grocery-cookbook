@@ -137,10 +137,32 @@ function ResponsiveDrawer(props) {
     </div>
   );
 
+  const routes = (
+    <Switch>
+        {/* Routes */}
+        <Route exact path="/">
+          <HomePage />
+        </Route>
+        <Route path="/shoppinglist/">
+          <ShoppingList />
+        </Route>
+        <Route path="/recipes/">
+          <Recipes />
+        </Route>
+        <Route path="/fridgetracker/">
+          <FridgeTracker />
+        </Route>
+        <Route path="/login/">
+          <LoginPage />
+        </Route>
+        {/* Routes */}
+      </Switch>
+  );
+
   return (
     <div className={classes.root}>
     <ThemeProvider theme={theme}>
-    <SnackbarProvider anchorOrigin={{horizontal: 'center', vertical: 'top'}}
+    <SnackbarProvider anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
         ref={notistackRef}
         action={(key) => (
             <Button onClick={() => notistackRef.current.closeSnackbar(key)}
@@ -201,25 +223,7 @@ function ResponsiveDrawer(props) {
       </nav>
       <main className={classes.content}>
         <div className={classes.toolbar} />
-        <Switch>
-        {/* Routes */}
-          <Route exact path="/">
-            <HomePage />
-          </Route>
-          <Route path="/shoppinglist/">
-            <ShoppingList />
-          </Route>
-          <Route path="/recipes/">
-            <Recipes />
-          </Route>
-          <Route path="/fridgetracker/">
-            <FridgeTracker />
-          </Route>
-          <Route path="/login/">
-            <LoginPage />
-          </Route>
-        {/* Routes */}
-        </Switch>
+          {routes}
       </main>
     </Router>
     </SnackbarProvider>
