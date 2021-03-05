@@ -66,6 +66,8 @@ class ShoppingListForm extends React.Component {
             add_list_name_error_text: '',
 
             edit_list_name: '',
+
+            itemMenuOpen: false,
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -461,6 +463,95 @@ class ShoppingListForm extends React.Component {
     }
 }
 
+function ShoppingList() {
+    const [item, setItem] = React.useState('');
+    const [quantity, setQuantity] = React.useState(1);
+    const [currentList, setCurrentList] = React.useState([]);
+
+    const handleItemChange = event => {
+        setItem(event.target.value);
+    };
+
+    const handleQuantityChange = event => {
+        setQuantity(event.target.value);
+    };
+
+    const submitItem = (event) => {
+        event.preventDefault();
+        const entry = {
+            item: item,
+            quantity: parseInt(quantity, 10),
+        };
+
+        let listItems = [];
+        for (let i = 0; i < currentList.length; i++) {
+            listItems.push(currentList[i]['item']);
+        }
+
+        if (entry.item !== '' && entry.quantity > 0 && !listItems.includes(entry.item)) {            
+            setCurrentList(currentList.concat(entry));
+        } else {
+            console.log('oops');
+        }
+
+    };
+
+    let listTable = currentList.map((entry) => {
+        return (
+        <TableRow key={entry['item']}>
+            <TableCell id={"id_item_" + entry['item']}>{entry['item']}</TableCell>
+            <TableCell>{entry['quantity']}</TableCell>
+            <TableCell>
+                <ListItemMenu />
+            </TableCell>
+        </TableRow>
+        );
+    });
+
+    return (
+        <div>
+            <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
+                <Grid item><h1>Shopping List</h1></Grid>
+                <Grid item><IconButton type="button"><SaveIcon /></IconButton></Grid>
+            </Grid>
+
+            <form style={{width:"100%", maxWidth:'600px'}}>
+                <TextField variant="standard" name="item" id="input_item" label="Item" 
+                    onChange={handleItemChange}
+                    value={item}
+                    // helperText={this.state.item_error_text} error={this.state.item_error}
+                    style={{width:"65%"}}
+                />
+                <TextField
+                    variant="standard" name="quantity" label="Quantity" type="number"
+                    style={{width:"25%"}}
+                    onChange={handleQuantityChange}
+                    value={quantity}
+                    // helperText={this.state.qty_error_text} error={this.state.qty_error}
+                />
+                <IconButton onClick={submitItem} type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
+                    <AddIcon />
+                </IconButton>
+            </form>
+            <br />
+            <TableContainer component={Paper} style={{width:'fit-content', minWidth:300}}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell style={{minWidth:150}}>Item</TableCell>
+                            <TableCell style={{maxWidth:50}}>Quantity</TableCell>
+                            <TableCell></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {listTable}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </div>
+    );
+}
+
 function ListItemMenu() {
     const [anchorEl, setAnchorEl] = React.useState(null);
   
@@ -492,11 +583,5 @@ function ListItemMenu() {
       </div>
     );
   }
-
-function ShoppingList() {
-    return (
-        <ShoppingListForm></ShoppingListForm>
-    );
-}
 
 export default ShoppingList;
