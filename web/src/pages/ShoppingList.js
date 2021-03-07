@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -40,440 +40,29 @@ import axios from 'axios';
 import { apiSettings } from '../services/apiSettings';
 import '../css/ShoppingList.css';
 
-class ShoppingListForm extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            item: '',
-            quantity: 1,
-            saved_lists: [{
-                name: 'My List',
-                content: [],
-            }],
-            current_list_index: 0,
-
-            item_error_text: '',
-            item_error: false,
-
-            qty_error_text: '',
-            qty_error: false,
-
-            show_add_list: false,
-            show_edit_list: false,
-
-            add_list_name: '',
-            add_list_name_error: false,
-            add_list_name_error_text: '',
-
-            edit_list_name: '',
-
-            itemMenuOpen: false,
-        };
-
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSelectChange = this.handleSelectChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.deleteEntry = this.deleteEntry.bind(this);
-        this.incrementQty = this.incrementQty.bind(this);
-        this.decrementQty = this.decrementQty.bind(this);
-        this.updateListCookie = this.updateListCookie.bind(this);
-        this.toggleCreateList = this.toggleCreateList.bind(this);
-        this.toggleEditList = this.toggleEditList.bind(this);
-        this.handleSubmitNewList = this.handleSubmitNewList.bind(this);
-        this.handleSubmitEditList = this.handleSubmitEditList.bind(this);
-        this.handleChangeNewList = this.handleChangeNewList.bind(this);
-        this.handleChangeEditList = this.handleChangeEditList.bind(this);
-        this.saveLists = this.saveLists.bind(this);
-    }
-
-    componentDidMount() { 
-
-        // Update current list name
-        this.setState({
-            edit_list_name: this.state.saved_lists[this.state.current_list_index].name
-        });
-
-        // Load list from cookie if present
-        const cookie_saved_lists_str = getCookie('saved_lists');
-        const cookie_current_list_index = getCookie('current_list_index');
-        if (cookie_saved_lists_str !== '') {
-            const saved_lists_cookie = JSON.parse(cookie_saved_lists_str);
-            this.setState({saved_lists:saved_lists_cookie});
-        } else {
-            console.log('No saved_lists cookie present');
-        }
-
-        if (cookie_current_list_index !== '') {
-            const current_list_index_cookie = JSON.parse(cookie_current_list_index);
-            this.setState({current_list_index:current_list_index_cookie});
-        } else {
-            console.log('No current_list_index cookie present');
-        }
-    }
-
-    updateListCookie() {
-        const oneYearFromNow = new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // set cookie to expire one year from now
-        document.cookie = "saved_lists=" + JSON.stringify(this.state.saved_lists) + "; expires=" + oneYearFromNow;
-        document.cookie = "current_list_index=" + JSON.stringify(this.state.current_list_index);
-    }
-
-    handleChange(event) { // handle change for our add item form
-        const target = event.target;
-        const value = target.value;
-        const name = target.name;
-
-        this.setState({
-            [name]: value,
-            item_error_text: '',
-            item_error: false,
-            qty_error_text: '',
-            qty_error: false,
-        });
-    }
-
-    handleSelectChange(event) { //handle change for select list box
-        this.setState({current_list_index: event.target.value});
-    }
-
-    handleSubmit(event) { //when submitting add item form
-        event.preventDefault();
-        const entry = {
-            item: this.state.item,
-            quantity: parseInt(this.state.quantity, 10),
-        };
-
-        const current_list_index = this.state.current_list_index;
-
-        let current_list = this.state.saved_lists[current_list_index].content;
-
-        let list_items_only = [];
-        for (let i = 0; i < current_list.length; i++) {
-            const current_list_entry = current_list[i];
-            list_items_only.push(current_list_entry['item']);
-        }
-
-        if (entry.item !== '' && entry.quantity > 0 && !list_items_only.includes(entry.item)) {
-            
-            current_list.push(entry);
-
-            let saved_lists_new = this.state.saved_lists;
-            saved_lists_new[current_list_index].content = current_list;
-
-            this.setState({
-                item: '',
-                quantity: 1,
-                saved_lists: saved_lists_new,
-                item_error: false,
-                item_error_text: '',
-                qty_error: false,
-                qty_error_text: '',
-            });
-            this.updateListCookie();
-        }
-        
-        if (entry.quantity > 0 && list_items_only.includes(entry.item)) {
-            this.setState({
-                item_error: true,
-                item_error_text: 'That item already exists'
-            });
-        }
-        if (entry.quantity <= 0) {
-            this.setState({
-                qty_error: true,
-                qty_error_text: "Quantity must be > 0"
-            });
-        }
-    }
-
-    deleteEntry(list_entry) { // delete a submitted item
-        let current_items_list = this.state.saved_lists[this.state.current_list_index].content; // get our current list
-        let index = current_items_list.indexOf(list_entry); // get index of value to remove
-        if (index !== -1) { // In case index came up as not present
-            current_items_list.splice(index, 1); // remove from the list
-        }
-
-        let saved_lists_new = this.state.saved_lists;
-        saved_lists_new[this.state.current_list_index].content = current_items_list;
-
-        this.setState({
-            saved_lists: saved_lists_new,
-        });
-        this.updateListCookie();
-    }
-
-    incrementQty(list_entry) {
-        let current_items_list = this.state.saved_lists[this.state.current_list_index].content; // get our current list
-        let index = current_items_list.indexOf(list_entry); // get index of value to adjust
-        if (index !== -1) {
-            current_items_list[index].quantity += 1; // increase item qty by 1
-        }
-
-        let saved_lists_new = this.state.saved_lists;
-        saved_lists_new[this.state.current_list_index].content = current_items_list;
-
-        this.setState({
-            saved_lists: saved_lists_new,
-        });
-        this.updateListCookie();
-    }
-
-    decrementQty(list_entry) {
-        let current_items_list = this.state.saved_lists[this.state.current_list_index].content; // get our current list
-        let index = current_items_list.indexOf(list_entry); // get index of value to adjust
-        if (index !== -1) {
-            if (current_items_list[index].quantity > 1) {
-                current_items_list[index].quantity -= 1; // decrease item qty by 1
-            }
-        }
-
-        let saved_lists_new = this.state.saved_lists;
-        saved_lists_new[this.state.current_list_index].content = current_items_list;
-
-        this.setState({
-            saved_lists: saved_lists_new,
-        });
-        this.updateListCookie();
-    }
-
-    toggleCreateList(event) {
-        if (this.state.show_add_list === true) {
-            this.setState({show_add_list:false});
-        } else {
-            this.setState({show_add_list:true});
-        }
-    }
-
-    toggleEditList(event) {
-        this.setState({
-            edit_list_name: this.state.saved_lists[this.state.current_list_index].name,
-        });
-        if (this.state.show_edit_list === true) {
-            this.setState({show_edit_list: false});
-        } else {
-            this.setState({show_edit_list:true});
-        }
-    }
-
-    handleSubmitNewList(event) {
-        event.preventDefault();
-        const new_list = {
-            name: this.state.add_list_name,
-            content: []
-        };
-
-        let saved_lists_new = this.state.saved_lists;
-        let name_exists = false;
-        for (let i = 0; i < saved_lists_new.length; i++) {
-            const shopping_list = saved_lists_new[i];
-            const list_name = shopping_list.name;
-            if (this.state.add_list_name === list_name) {
-                name_exists = true;
-            }
-        }
-
-        if (name_exists === false) {
-            const new_list_index = saved_lists_new.push(new_list) - 1;
-            this.setState({
-                show_add_list: false,
-                saved_lists: saved_lists_new,
-                current_list_index: new_list_index,
-            });
-            this.updateListCookie();
-        } else {
-            this.setState({
-                add_list_name_error: true,
-                add_list_name_error_text: 'A list with that name already exists'
-            });
-        }
-    }
-
-    handleSubmitEditList(event) {
-        event.preventDefault();
-        const new_name = this.state.edit_list_name;
-        let saved_lists = this.state.saved_lists;
-        saved_lists[this.state.current_list_index].name = new_name;
-        this.setState({
-            saved_lists: saved_lists,
-            show_edit_list: false,
-        });
-        this.updateListCookie();
-    }
-
-    handleChangeNewList(event) {
-        this.setState({
-            add_list_name: event.target.value,
-            add_list_name_error: false,
-            add_list_name_error_text: '',
-        });
-    }
-
-    handleChangeEditList(event) {
-        this.setState({
-            edit_list_name: event.target.value,
-        });
-    }
-
-    saveLists(event) {
-        axios.get(apiSettings.url + "shoppinglists/",apiSettings.configAuth)
-        .then(result => {
-          console.log(result);
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-
-    render() {
-        return (
-            <div>
-            <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
-                <Grid item><h1>Shopping List</h1></Grid>
-                <Grid item><IconButton type="button" onClick={this.saveLists}><SaveIcon /></IconButton></Grid>
-            </Grid>
-            <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
-                <Grid item>
-                <FormControl variant="outlined" className="select-current-list-form">
-                    <InputLabel htmlFor="outlined-age-native-simple">Current List</InputLabel>
-                    <Select
-                    className="select-current-list"
-                    value={this.state.current_list_index}
-                    onChange={this.handleSelectChange}
-                    label="Current List"
-                    >
-                    {this.state.saved_lists.map((saved_list, index) => (
-                        <MenuItem key={index} value={index}>{saved_list.name}</MenuItem>
-                    ))}
-                    </Select>
-                </FormControl>
-                </Grid>
-                <Grid item className="list-button">
-                    <IconButton type="button" onClick={this.toggleCreateList}><AddIcon /></IconButton>
-                </Grid>
-                <Grid item className="list-button">
-                    <IconButton type="button" onClick={this.toggleEditList}><EditIcon /></IconButton>
-                </Grid>
-            </Grid>
-
-            <Dialog open={this.state.show_add_list} onClose={this.toggleCreateList} aria-labelledby="create-new-list">
-                <DialogTitle id="create-new-list">New Shopping List</DialogTitle>
-                <form>
-                <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="List Name"
-                    type="text"
-                    value={this.state.add_list_name}
-                    onChange={this.handleChangeNewList}
-                    error={this.state.add_list_name_error}
-                    helperText={this.state.add_list_name_error_text}
-                    fullWidth
-                />
-                </DialogContent>
-                <DialogActions>
-                <Button type="button" onClick={this.toggleCreateList} color="primary">
-                    Cancel
-                </Button>
-                <Button type="submit" onClick={this.handleSubmitNewList} color="primary">
-                    Create
-                </Button>
-                </DialogActions>
-                </form>
-            </Dialog>
-
-            <Dialog open={this.state.show_edit_list} onClose={this.toggleEditList} aria-labelledby="edit-list">
-                <DialogTitle id="edit-list">
-                <Grid container direction="row" alignItems="center" justify="space-between">
-                    <Grid item>Manage {this.state.saved_lists[this.state.current_list_index].name}</Grid>
-                    <Grid item><IconButton type="button"><DeleteIcon /></IconButton></Grid>
-                </Grid>
-                </DialogTitle>
-                    <DialogContent>
-                    <form>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label={"List #" + (this.state.current_list_index+1)}
-                        type="text"
-                        value={this.state.edit_list_name}
-                        onChange={this.handleChangeEditList}
-                        // error={this.state.edit_list_name_error}
-                        // helperText={this.state.edit_list_name_error_text}
-                        fullWidth
-                    />
-                    <DialogActions>
-                    <Button type="button" onClick={this.toggleEditList} color="primary">
-                        Cancel
-                    </Button>
-                    <Button type="submit" onClick={this.handleSubmitEditList} color="primary">
-                        Update Name
-                    </Button>
-                    </DialogActions>
-                    </form>
-                    </DialogContent>
-            </Dialog>
-
-            <br />
-            
-            <form onSubmit={this.handleSubmit} style={{width:"100%", maxWidth:'600px'}}>
-                <TextField variant="standard" name="item" id="input_item" label="Item" 
-                    onChange={this.handleChange} value={this.state.item}
-                    helperText={this.state.item_error_text} error={this.state.item_error}
-                    style={{width:"65%"}}
-                />
-                <TextField
-                    variant="standard" name="quantity" label="Quantity" type="number"
-                    style={{width:"25%"}} onChange={this.handleChange}
-                    value={this.state.quantity}
-                    helperText={this.state.qty_error_text} error={this.state.qty_error}
-                />
-                <IconButton type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
-                    <AddIcon />
-                </IconButton>
-            </form>
-            <br />
-            <TableContainer component={Paper} style={{width:'fit-content', minWidth:300}}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell style={{minWidth:150}}>Item</TableCell>
-                            <TableCell style={{maxWidth:50}}>Quantity</TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {this.state.saved_lists[this.state.current_list_index].content.map((list_entry) => (
-                        <TableRow key={list_entry['item']}>
-                            <TableCell id={"id_item_" + list_entry['item']}>{list_entry['item']}</TableCell>
-                            <TableCell>{list_entry['quantity']}</TableCell>
-                            <TableCell>
-                                <ListItemMenu />
-                                {/* <IconButton onClick={()=>this.incrementQty(list_entry)}><UpIcon></UpIcon></IconButton>
-                                <IconButton onClick={()=>this.decrementQty(list_entry)}><DownIcon></DownIcon></IconButton>
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <IconButton onClick={()=>this.deleteEntry(list_entry)}><DeleteIcon></DeleteIcon></IconButton> */}
-                            </TableCell>
-                        </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-            </div>
-        );
-    }
-}
 
 function ShoppingList() {
-    const [item, setItem] = React.useState('');
-    const [quantity, setQuantity] = React.useState(1);
-    const [currentList, setCurrentList] = React.useState([]);
+    const wipeErrorTextField = {msg: '', err: false};
+
+    const [item, setItem] = useState('');
+    const [quantity, setQuantity] = useState(1);
+    const [currentListIndex, setCurrentListIndex] = useState(0);
+    const [savedLists, setSavedLists] = useState([{
+        name: 'My List', content: [],
+    }]);
+    const [addItemNameError, setAddItemNameError] = useState(wipeErrorTextField);
+    const [addItemQtyError, setAddItemQtyError] = useState(wipeErrorTextField);
+
+    const [showDialogNewList, setShowDialogNewList] = useState(false);
 
     const handleItemChange = event => {
         setItem(event.target.value);
+        setAddItemNameError(wipeErrorTextField);
     };
 
     const handleQuantityChange = event => {
         setQuantity(event.target.value);
+        setAddItemQtyError(wipeErrorTextField);
     };
 
     const submitItem = (event) => {
@@ -483,20 +72,85 @@ function ShoppingList() {
             quantity: parseInt(quantity, 10),
         };
 
+        const currentList = savedLists[currentListIndex].content;
+
         let listItems = [];
         for (let i = 0; i < currentList.length; i++) {
             listItems.push(currentList[i]['item']);
         }
 
-        if (entry.item !== '' && entry.quantity > 0 && !listItems.includes(entry.item)) {            
-            setCurrentList(currentList.concat(entry));
-        } else {
-            console.log('oops');
+        if (entry.item !== '' && entry.quantity > 0 && !listItems.includes(entry.item)) {
+            // https://stackoverflow.com/questions/55856176/ui-not-re-rendering-on-state-update-using-react-hooks-and-form-submission
+            const newSavedLists = [...savedLists]; // must use this syntax to update lists w/ Hooks
+            newSavedLists[currentListIndex].content.push(entry);
+            
+            setSavedLists(newSavedLists);
+        }
+        
+        if (listItems.includes(entry.item)) {
+            setAddItemNameError({msg: 'That item already exists', err: true});
         }
 
+        if (entry.quantity <= 0) {
+            setAddItemQtyError({msg: 'Quantity must be > 0', err: true});
+        }
     };
 
-    let listTable = currentList.map((entry) => {
+    const pageHeader = (
+        <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
+            <Grid item><h1>Shopping List</h1></Grid>
+            <Grid item><IconButton type="button"><SaveIcon /></IconButton></Grid>
+        </Grid>
+    );
+
+    const listSelection = (
+        <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
+            <Grid item>
+            <FormControl variant="outlined" className="select-current-list-form">
+                <InputLabel htmlFor="outlined-age-native-simple">Current List</InputLabel>
+                <Select
+                className="select-current-list"
+                value={currentListIndex}
+                onChange={(event) => {setCurrentListIndex(event.target.value);}}
+                label="Current List"
+                >
+                {savedLists.map((savedList, index) => (
+                    <MenuItem key={index} value={index}>{savedList.name}</MenuItem>
+                ))}
+                </Select>
+            </FormControl>
+            </Grid>
+            <Grid item className="list-button">
+                <IconButton type="button" ><AddIcon /></IconButton>
+            </Grid>
+            <Grid item className="list-button">
+                <IconButton type="button" ><EditIcon /></IconButton>
+            </Grid>
+        </Grid>
+    );
+
+    const addItemForm = (
+        <form style={{width:"100%", maxWidth:'600px'}}>
+        <TextField variant="standard" name="item" id="input_item" label="Item" 
+            onChange={handleItemChange}
+            value={item}
+            helperText={addItemNameError.msg} error={addItemNameError.err}
+            style={{width:"65%"}}
+        />
+        <TextField
+            variant="standard" name="quantity" label="Quantity" type="number"
+            style={{width:"25%"}}
+            onChange={handleQuantityChange}
+            value={quantity}
+            helperText={addItemQtyError.msg} error={addItemQtyError.err}
+        />
+        <IconButton onClick={submitItem} type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
+            <AddIcon />
+        </IconButton>
+    </form>
+    );
+
+    const listTableItems = savedLists[currentListIndex].content.map((entry) => {
         return (
         <TableRow key={entry['item']}>
             <TableCell id={"id_item_" + entry['item']}>{entry['item']}</TableCell>
@@ -508,52 +162,68 @@ function ShoppingList() {
         );
     });
 
-    return (
-        <div>
-            <Grid container direction="row" alignItems="center" justify="flex-start" spacing={1}>
-                <Grid item><h1>Shopping List</h1></Grid>
-                <Grid item><IconButton type="button"><SaveIcon /></IconButton></Grid>
-            </Grid>
+    const listTable = (
+        <TableContainer component={Paper} style={{width:'fit-content', minWidth:300}}>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell style={{minWidth:150}}>Item</TableCell>
+                        <TableCell style={{maxWidth:50}}>Quantity</TableCell>
+                        <TableCell></TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {listTableItems}
+                </TableBody>
+            </Table>
+        </TableContainer>
+    );
 
-            <form style={{width:"100%", maxWidth:'600px'}}>
-                <TextField variant="standard" name="item" id="input_item" label="Item" 
-                    onChange={handleItemChange}
-                    value={item}
-                    // helperText={this.state.item_error_text} error={this.state.item_error}
-                    style={{width:"65%"}}
-                />
-                <TextField
-                    variant="standard" name="quantity" label="Quantity" type="number"
-                    style={{width:"25%"}}
-                    onChange={handleQuantityChange}
-                    value={quantity}
-                    // helperText={this.state.qty_error_text} error={this.state.qty_error}
-                />
-                <IconButton onClick={submitItem} type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
-                    <AddIcon />
-                </IconButton>
-            </form>
+    // const dialogNewList = (
+    //     <Dialog open={false} onClose={setShowDialogNewList(false)} aria-labelledby="create-new-list">
+    //         <DialogTitle id="create-new-list">New Shopping List</DialogTitle>
+    //         <form>
+    //         <DialogContent>
+    //         <TextField
+    //             autoFocus
+    //             margin="dense"
+    //             label="List Name"
+    //             type="text"
+    //             // value={this.state.add_list_name}
+    //             // onChange={this.handleChangeNewList}
+    //             // error={this.state.add_list_name_error}
+    //             // helperText={this.state.add_list_name_error_text}
+    //             fullWidth
+    //         />
+    //         </DialogContent>
+    //         <DialogActions>
+    //         <Button type="button" onClick={setShowDialogNewList(false)} color="primary">
+    //             Cancel
+    //         </Button>
+    //         <Button type="submit" onClick={setShowDialogNewList(false)} color="primary">
+    //             Create
+    //         </Button>
+    //         </DialogActions>
+    //         </form>
+    //     </Dialog>
+    // );
+
+    return (
+        <>
+            {pageHeader}
+            {listSelection}
             <br />
-            <TableContainer component={Paper} style={{width:'fit-content', minWidth:300}}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell style={{minWidth:150}}>Item</TableCell>
-                            <TableCell style={{maxWidth:50}}>Quantity</TableCell>
-                            <TableCell></TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {listTable}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+            {addItemForm}
+            <br />
+            {listTable}
+
+            {/* {dialogNewList} */}
+        </>
     );
 }
 
 function ListItemMenu() {
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
   
     const handleClick = (event) => {
       setAnchorEl(event.currentTarget);
