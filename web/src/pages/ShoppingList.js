@@ -180,7 +180,7 @@ function ShoppingList() {
         const listExists = listNameExists(newListName);
 
         if (listExists) {
-            setNewListNameError({msg: 'A list with name already exists', err: true});
+            setNewListNameError({msg: 'A list with that name already exists', err: true});
         } else {
             const newList = {
                 name: newListName,
