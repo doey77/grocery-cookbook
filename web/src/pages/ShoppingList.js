@@ -327,23 +327,23 @@ function ShoppingList() {
 
     const addItemForm = (
         <form style={{width:"100%", maxWidth:'600px'}}>
-        <TextField variant="standard" name="item" id="input_item" label="Item" 
-            onChange={handleItemChange}
-            value={item}
-            helperText={addItemNameError.msg} error={addItemNameError.err}
-            style={{width:"65%"}}
-        />
-        <TextField
-            variant="standard" name="quantity" label="Quantity" type="number"
-            style={{width:"25%"}}
-            onChange={handleQuantityChange}
-            value={quantity}
-            helperText={addItemQtyError.msg} error={addItemQtyError.err}
-        />
-        <IconButton onClick={submitItem} type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
-            <AddIcon />
-        </IconButton>
-    </form>
+            <TextField variant="standard" name="item" id="input_item" label="Item" 
+                onChange={handleItemChange}
+                value={item}
+                helperText={addItemNameError.msg} error={addItemNameError.err}
+                style={{width:"65%"}}
+            />
+            <TextField
+                variant="standard" name="quantity" label="Quantity" type="number"
+                style={{width:"25%"}}
+                onChange={handleQuantityChange}
+                value={quantity}
+                helperText={addItemQtyError.msg} error={addItemQtyError.err}
+            />
+            <IconButton onClick={submitItem} type="submit" aria-label="Add Item" style={{width:"10%", maxWidth:'48px'}}>
+                <AddIcon />
+            </IconButton>
+        </form>
     );
 
     const listTableItems = savedLists[currentListIndex].content.map((entry) => {
