@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -42,6 +42,39 @@ import { getCookie } from '../services/cookies';
 import '../css/ShoppingList.css';
 
 
+/**
+ * Get the saved list cookie. If not found, returns an empty one
+ * @returns Saved list from cookie, or an empty one
+ */
+function cookieSavedList() {
+    const cookieSavedListsUnparsed = getCookie('saved_lists');
+
+    if (cookieSavedListsUnparsed !== '') {
+        return JSON.parse(cookieSavedListsUnparsed);
+    } else {
+        console.log('No saved_lists cookie present');
+        return [{
+            name: 'My List', content: [],
+        }];
+    }
+}
+
+/**
+ * Get the current list index cookie. If not found, return 0 as index.
+ * @returns Current list index from cookie, or 0
+ */
+function cookieCurrentListIndex() {
+    const cookieCurrentListIndexUnparsed = getCookie('current_list_index');
+
+    if (cookieCurrentListIndexUnparsed !== '') {
+        console.log(JSON.parse(cookieCurrentListIndexUnparsed));
+        return JSON.parse(cookieCurrentListIndexUnparsed);
+    } else {
+        console.log('No current_list_index cookie present');
+        return 0;
+    }  
+}
+
 function ShoppingList() {
     const wipeErrorTextField = {msg: '', err: false};
 
@@ -50,10 +83,8 @@ function ShoppingList() {
     const [item, setItem] = useState('');
     const [quantity, setQuantity] = useState(1);
 
-    const [currentListIndex, setCurrentListIndex] = useState(0);
-    const [savedLists, setSavedLists] = useState([{
-        name: 'My List', content: [],
-    }]);
+    const [currentListIndex, setCurrentListIndex] = useState(cookieCurrentListIndex());
+    const [savedLists, setSavedLists] = useState(cookieSavedList());
 
     const [newListName, setNewListName] = useState('');
     const [editListName, setEditListName] = useState('');
@@ -63,9 +94,17 @@ function ShoppingList() {
     const [newListNameError, setNewListNameError] = useState(wipeErrorTextField);
     const [editListNameError, setEditListNameError] = useState(wipeErrorTextField);
 
-
     const [showDialogNewList, setShowDialogNewList] = useState(false);
     const [showDialogEditList, setShowDialogEditList] = useState(false);
+
+    const [menuListItemAnchorEl, setMenuListItemAnchorEl] = useState(null);
+
+
+    const updateListCookie = () => {
+        const oneYearFromNow = new Date(new Date().setFullYear(new Date().getFullYear() + 1)); // set cookie to expire one year from now
+        document.cookie = "saved_lists=" + JSON.stringify(savedLists) + "; path=/shoppinglist" + "; expires=" + oneYearFromNow;
+        document.cookie = "current_list_index=" + JSON.stringify(currentListIndex) + "; path=/shoppinglist" + "; expires=" + oneYearFromNow;
+    };
 
     const handleItemChange = event => {
         setItem(event.target.value);
@@ -153,6 +192,7 @@ function ShoppingList() {
             setCurrentListIndex(savedLists.length); // Set current list to new list
 
             dialogCloseNewList();
+            updateListCookie();
         }
     };
 
@@ -169,6 +209,7 @@ function ShoppingList() {
             setSavedLists(newSavedLists);
 
             dialogCloseEditList();
+            updateListCookie();
         }
     };
 
@@ -188,7 +229,41 @@ function ShoppingList() {
             }
             setSavedLists(newSavedLists);
             dialogCloseEditList();
+            updateListCookie();
         }
+    };
+
+    const listItemIncrementQty = (listEntry) => {
+        const newSavedLists = [...savedLists];
+        const indexEntry = newSavedLists[currentListIndex].content.indexOf(listEntry); // Get index of item
+        if (indexEntry !== -1) { // Make sure index exists
+            newSavedLists[currentListIndex].content[indexEntry].quantity += 1; // Increment item qty by 1
+        }
+        setSavedLists(newSavedLists);
+        updateListCookie();
+    };
+
+    const listItemDecrementQty = (listEntry) => {
+        const newSavedLists = [...savedLists];
+        const indexEntry = newSavedLists[currentListIndex].content.indexOf(listEntry); // Get index of item
+        if (indexEntry !== -1) { // Make sure index exists
+            if (newSavedLists[currentListIndex].content[indexEntry].quantity > 1) { // Ensure qty > 1
+                newSavedLists[currentListIndex].content[indexEntry].quantity -= 1; // Decrement item qty by 1
+            }
+        }
+        setSavedLists(newSavedLists);
+        updateListCookie();
+    };
+
+    const listItemDelete = (listEntry) => {
+        const newSavedLists = [...savedLists];
+        const indexEntry = newSavedLists[currentListIndex].content.indexOf(listEntry); // Get index of item
+        if (indexEntry !== -1) { // Make sure index exists
+            newSavedLists[currentListIndex].content.splice(indexEntry, 1); // Remove from list
+        }
+        setSavedLists(newSavedLists);
+        menuListItemHandleClose();
+        updateListCookie();
     };
 
     const dialogCloseNewList = () => {
@@ -201,6 +276,14 @@ function ShoppingList() {
         setShowDialogEditList(false);
         setEditListName('');
         setEditListNameError(wipeErrorTextField);
+    };
+
+    const menuListItemhandleClick = (event) => {
+        setMenuListItemAnchorEl(event.currentTarget);
+    };
+    
+    const menuListItemHandleClose = () => {
+        setMenuListItemAnchorEl(null);
     };
 
     const pageHeader = (
@@ -218,7 +301,10 @@ function ShoppingList() {
                 <Select
                 className="select-current-list"
                 value={currentListIndex}
-                onChange={(event) => {setCurrentListIndex(event.target.value);}}
+                onChange={(event) => {
+                    setCurrentListIndex(event.target.value);
+                    updateListCookie();
+                }}
                 label="Current List"
                 >
                 {savedLists.map((savedList, index) => (
@@ -266,7 +352,21 @@ function ShoppingList() {
             <TableCell id={"id_item_" + entry['item']}>{entry['item']}</TableCell>
             <TableCell>{entry['quantity']}</TableCell>
             <TableCell>
-                <ListItemMenu />
+                <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={menuListItemhandleClick}>
+                <MoreVertIcon />
+                </IconButton>
+                <Menu
+                id="simple-menu"
+                anchorEl={menuListItemAnchorEl}
+                keepMounted
+                open={Boolean(menuListItemAnchorEl)}
+                onClose={menuListItemHandleClose}
+                >
+                <MenuItem onClick={() => listItemIncrementQty(entry)}><UpIcon />&nbsp;Increase</MenuItem>
+                <MenuItem onClick={() => listItemDecrementQty(entry)}><DownIcon />&nbsp;Decrease</MenuItem>
+                <br /><Divider /><br />
+                <MenuItem onClick={() => listItemDelete(entry)}><DeleteIcon />&nbsp;Delete</MenuItem>
+                </Menu>
             </TableCell>
         </TableRow>
         );
@@ -366,37 +466,5 @@ function ShoppingList() {
         </>
     );
 }
-
-function ListItemMenu() {
-    const [anchorEl, setAnchorEl] = useState(null);
-  
-    const handleClick = (event) => {
-      setAnchorEl(event.currentTarget);
-    };
-  
-    const handleClose = () => {
-      setAnchorEl(null);
-    };
-  
-    return (
-      <div>
-        <IconButton aria-controls="simple-menu" aria-haspopup="true" onClick={handleClick}>
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="simple-menu"
-          anchorEl={anchorEl}
-          keepMounted
-          open={Boolean(anchorEl)}
-          onClose={handleClose}
-        >
-          <MenuItem><UpIcon />&nbsp;Increase</MenuItem>
-          <MenuItem><DownIcon />&nbsp;Decrease</MenuItem>
-          <br /><Divider /><br />
-          <MenuItem onClick={handleClose}><DeleteIcon />&nbsp;Delete</MenuItem>
-        </Menu>
-      </div>
-    );
-  }
 
 export default ShoppingList;
