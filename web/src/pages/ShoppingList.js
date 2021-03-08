@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import AddIcon from '@material-ui/icons/Add';
 import DeleteIcon from '@material-ui/icons/Delete';
@@ -67,7 +67,6 @@ function cookieCurrentListIndex() {
     const cookieCurrentListIndexUnparsed = getCookie('current_list_index');
 
     if (cookieCurrentListIndexUnparsed !== '') {
-        console.log(JSON.parse(cookieCurrentListIndexUnparsed));
         return JSON.parse(cookieCurrentListIndexUnparsed);
     } else {
         console.log('No current_list_index cookie present');
