@@ -21,28 +21,12 @@ def get_shopping_lists(
     shoppinglist = crud_shoppinglists.crud_get_multi_by_user(db=db, user_id=current_user.id, skip=skip, limit=limit)
     return shoppinglist
 
-@router.post("/", response_model=ShoppingLists)
-def create_shopping_list(
+@router.post("/",)
+def update_and_remove_shopping_lists(
     *,
     db: Session = Depends(get_db),
-    shoppinglist_in: ShoppingListsCreate,
-    current_user: DBUser = Depends(get_current_user)):
-    """Create shopping list with logged in user as owner"""
-    shoppinglist = crud_shoppinglists.crud_create_as_user(db=db, obj_in=shoppinglist_in, user_id=current_user.id)
-    return shoppinglist
-
-@router.post("/{shoppinglist_id}/items/", response_model=ShoppingListItem)
-def create_shopping_list_item(
-    *,
-    db: Session = Depends(get_db),
-    shoppinglistitem_in: ShoppingListItemCreate,
-    shoppinglist_id: int,
-    current_user: DBUser = Depends(get_current_user)):
-    """Create an item for the specified list"""
-    shoppinglist = crud_shoppinglists.crud_get(db=db, id=shoppinglist_id)
-    if shoppinglist.user_id == current_user.id:
-        shoppinglistitem = crud_shoppinglistitem.crud_create(db=db,
-            obj_in=shoppinglistitem_in, shoppinglist_id=shoppinglist_id)
-        return shoppinglistitem
-    else:
-        raise HTTPException(status_code=403, detail="That shopping list isn't owned by that user.")
+    current_user: DBUser = Depends(get_current_user),
+    shoppinglist_in: ShoppingListsBatchUpdate,):
+    """Update shopping lists all at once (deletes any not in list)"""
+    shoppinglists = crud_shoppinglists_update_multi(db=db, obj_in=shoppinglist_in, user_id=current_user.id)
+    return shoppinglists

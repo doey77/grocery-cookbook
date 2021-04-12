@@ -10,7 +10,7 @@ class DBShoppingLists(DBBase):
     __tablename__ = "shoppinglist_lists"
 
     id = Column(Integer, primary_key=True, index=True)
-    list_name = Column(String(length=100), index=True)
+    list_name = Column(String(length=100), index=True, unique=True)
     user_id = Column(Integer, ForeignKey("users.id"))
 
     shoppinglist_items = relationship("DBShoppingListItem", back_populates="shoppinglist")

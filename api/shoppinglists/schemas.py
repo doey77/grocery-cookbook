@@ -1,4 +1,4 @@
-from typing import List
+from typing import Dict, List
 
 from ..core.base_schema import APIModel
 
@@ -38,3 +38,19 @@ class ShoppingLists(ShoppingListsBase):
     shoppinglist_items: List[ShoppingListItem] = []
 
 # ===== Shopping Lists =====
+
+# ===== Batch Update =====
+
+class ShoppingListItemBatchUpdate(APIModel):
+    item: str
+    quantity: int
+
+class ShoppingListBatchUpdate(APIModel):
+    name: str
+    content: List[ShoppingListItemBatchUpdate]
+
+class ShoppingListsBatchUpdate(APIModel):
+    """Schema for a batch update of shopping lists, including both the name and contents of each list"""
+    lists: List[ShoppingListBatchUpdate]
+
+# ===== Batch Update =====
